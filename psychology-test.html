@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나의 디지털 페르소나 테스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --card: #13131a;
+  --card-hover: #1a1a25;
+  --accent1: #7c5cfc;
+  --accent2: #ff6b9d;
+  --accent3: #00d4aa;
+  --accent4: #ffd166;
+  --text: #e8e6f0;
+  --text-dim: #8a879a;
+  --glass: rgba(124, 92, 252, 0.08);
+  --border: rgba(124, 92, 252, 0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.bg-orbs {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+}
+.orb {
+  position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+.orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+.orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+.orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+
+@keyframes orbFloat {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-20px) scale(1.05); }
+  66% { transform: translate(-20px,30px) scale(0.95); }
+}
+
+.container {
+  position: relative; z-index: 1;
+  max-width: 520px; margin: 0 auto; padding: 20px;
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+}
+
+/* ===== INTRO ===== */
+.screen { display: none; animation: fadeUp 0.6s ease; }
+.screen.active { display: flex; flex-direction: column; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.intro-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--glass); border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 100px; font-size: 12px;
+  color: var(--accent1); width: fit-content; margin-bottom: 24px;
+  font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+}
+.intro-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.intro-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 42px; font-weight: 800; line-height: 1.15;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.intro-desc {
+  font-size: 15px; color: var(--text-dim); line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.intro-stats {
+  display: flex; gap: 12px; margin-bottom: 36px;
+}
+.stat {
+  flex: 1; background: var(--glass); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px; text-align: center;
+}
+.stat-num {
+  font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+.btn-start {
+  width: 100%; padding: 18px; border: none; border-radius: 16px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 17px; font-weight: 700; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #fff; position: relative; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124,92,252,0.4);
+}
+.btn-start::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+  transform: translateX(-100%); animation: shimmer 3s infinite;
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+/* ===== QUESTION ===== */
+.progress-wrap {
+  margin-bottom: 32px;
+}
+.progress-info {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.progress-label {
+  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim);
+}
+.progress-num {
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+  color: var(--accent1);
+}
+.progress-bar {
+  width: 100%; height: 6px; background: rgba(124,92,252,0.12);
+  border-radius: 100px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.q-emoji {
+  font-size: 48px; margin-bottom: 16px;
+  animation: bounceIn 0.5s ease;
+}
+@keyframes bounceIn {
+  0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); }
+}
+
+.q-text {
+  font-size: 20px; font-weight: 700; line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.options { display: flex; flex-direction: column; gap: 12px; }
+
+.opt-btn {
+  width: 100%; padding: 16px 20px; border: 1px solid var(--border);
+  border-radius: 14px; background: var(--card);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px; color: var(--text); cursor: pointer;
+  text-align: left; transition: all 0.25s; position: relative;
+  overflow: hidden;
+}
+.opt-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  opacity: 0; transition: opacity 0.3s;
+}
+.opt-btn span { position: relative; z-index: 1; }
+.opt-btn:hover {
+  border-color: var(--accent1);
+  transform: translateX(6px);
+  box-shadow: 0 4px 20px rgba(124,92,252,0.15);
+}
+.opt-btn:hover::before { opacity: 0.12; }
+.opt-btn:active { transform: translateX(6px) scale(0.98); }
+
+/* ===== LOADING ===== */
+.loading-screen {
+  align-items: center; justify-content: center; text-align: center;
+  min-height: 60vh;
+}
+.loader-ring {
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent1); border-right-color: var(--accent2);
+  animation: spin 1s linear infinite;
+  margin-bottom: 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-size: 16px; font-weight: 500; margin-bottom: 8px;
+}
+.loading-sub {
+  font-size: 13px; color: var(--text-dim);
+  animation: pulse 2s infinite;
+}
+
+/* ===== RESULT ===== */
+.result-screen { align-items: center; }
+
+.result-card {
+  width: 100%; border-radius: 24px; overflow: hidden;
+  background: var(--card); border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.result-hero {
+  padding: 40px 32px 24px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.result-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  opacity: 0.08;
+}
+.result-type-badge {
+  display: inline-block; padding: 4px 14px; border-radius: 100px;
+  font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(255,255,255,0.1); color: var(--accent4);
+  margin-bottom: 12px; position: relative;
+}
+.result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+.result-name {
+  font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+  position: relative;
+  background: linear-gradient(135deg, #fff, var(--accent1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.result-subtitle {
+  font-size: 14px; color: var(--text-dim); margin-top: 8px;
+  position: relative;
+}
+
+.result-body { padding: 24px 28px 28px; }
+
+.result-desc {
+  font-size: 14px; line-height: 1.8; color: var(--text-dim);
+  margin-bottom: 24px; word-break: keep-all;
+}
+
+.trait-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 24px;
+}
+.trait {
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px; text-align: center;
+}
+.trait-icon { font-size: 22px; margin-bottom: 6px; }
+.trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.trait-bar {
+  margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06);
+  border-radius: 100px; overflow: hidden;
+}
+.trait-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent3));
+  transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+  width: 0;
+}
+
+.compat-section { margin-bottom: 20px; }
+.compat-title {
+  font-size: 12px; font-weight: 600; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+}
+.compat-row {
+  display: flex; gap: 8px;
+}
+.compat-tag {
+  padding: 6px 14px; border-radius: 100px; font-size: 12px;
+  background: var(--glass); border: 1px solid var(--border);
+}
+.compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+.compat-tag.bad { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+.btn-retry {
+  width: 100%; padding: 16px; border: 1px solid var(--border);
+  border-radius: 14px; background: var(--card);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-retry:hover {
+  border-color: var(--accent1);
+  background: var(--card-hover);
+}
+
+.btn-share {
+  width: 100%; padding: 16px; border: none; border-radius: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #fff; margin-bottom: 10px;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+.btn-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124,92,252,0.4);
+}
+
+.footer {
+  text-align: center; margin-top: 20px;
+  font-size: 11px; color: var(--text-dim);
+  opacity: 0.5;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> 2026 트렌드 테스트</div>
+    <h1 class="intro-title">나의 디지털<br>페르소나는?</h1>
+    <p class="intro-desc">
+      SNS, 메신저, 온라인 속 나의 모습은 진짜 나일까?<br>
+      8가지 질문으로 알아보는 나만의 디지털 성격 유형 🔮
+    </p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num">12</div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startTest()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUESTION -->
+  <div class="screen" id="question">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="progNum">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+    <div class="q-emoji" id="qEmoji"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="opts"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen loading-screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 디지털 DNA를 해독하는 중 🧬</div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen result-screen" id="result"></div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    emoji: "📱",
+    text: "알림이 100개 쌓였을 때 당신의 반응은?",
+    options: [
+      { text: "😤 하나씩 다 확인하고 깔끔하게 정리", scores: { order: 3, social: 1 } },
+      { text: "😎 중요한 것만 골라보고 나머진 전체 삭제", scores: { chill: 3, efficiency: 1 } },
+      { text: "😰 보기만 해도 스트레스... 일단 무시", scores: { introvert: 3, creative: 1 } },
+      { text: "🤩 알림 많은 거 좋아! 인기 많은 느낌", scores: { social: 3, energy: 1 } }
+    ]
+  },
+  {
+    emoji: "💬",
+    text: "단톡방에서 누가 논쟁을 시작했다면?",
+    options: [
+      { text: "🍿 팝콘 꺼내고 구경 모드 ON", scores: { chill: 3, introvert: 1 } },
+      { text: "⚖️ 양쪽 의견 정리해서 중재 시도", scores: { order: 2, social: 2 } },
+      { text: "🔥 내 의견도 한마디 던진다", scores: { energy: 3, creative: 1 } },
+      { text: "🚪 조용히 나간다", scores: { introvert: 3, chill: 1 } }
+    ]
+  },
+  {
+    emoji: "📸",
+    text: "인스타 피드를 올릴 때 당신의 스타일은?",
+    options: [
+      { text: "🎨 필터·구도·톤 완벽하게 맞춘 감성샷", scores: { creative: 3, order: 1 } },
+      { text: "📝 사진보다 긴 캡션에 진심인 편", scores: { creative: 2, introvert: 2 } },
+      { text: "⚡ 찍자마자 바로 올림! 자연스러움이 최고", scores: { energy: 3, chill: 1 } },
+      { text: "👻 올리기보다 남의 피드 보는 게 더 좋음", scores: { introvert: 3, social: 1 } }
+    ]
+  },
+  {
+    emoji: "🎮",
+    text: "새로운 앱/게임이 유행할 때 나는?",
+    options: [
+      { text: "🏃 바로 깔아서 누구보다 먼저 해봄", scores: { energy: 3, social: 1 } },
+      { text: "🔍 리뷰 다 읽고 비교 분석 후 결정", scores: { order: 3, efficiency: 1 } },
+      { text: "🤷 유행이 지나면 그때 슬쩍 해봄", scores: { chill: 3, introvert: 1 } },
+      { text: "🛠️ 유행보다 내가 좋아하는 걸 함", scores: { creative: 3, chill: 1 } }
+    ]
+  },
+  {
+    emoji: "🌙",
+    text: "자기 전 침대에서 폰으로 주로 하는 것은?",
+    options: [
+      { text: "📺 유튜브/넷플릭스 무한 정주행", scores: { chill: 2, energy: 2 } },
+      { text: "🐦 트위터/쓰레드에서 밈 수집", scores: { creative: 2, social: 2 } },
+      { text: "📖 뉴스·아티클·블로그 정독", scores: { order: 2, efficiency: 2 } },
+      { text: "💭 아무것도 안 하고 천장 봄 (폰 놓기)", scores: { introvert: 3, creative: 1 } }
+    ]
+  },
+  {
+    emoji: "👤",
+    text: "프로필 사진을 고르는 당신의 기준은?",
+    options: [
+      { text: "✨ 잘 나온 셀카! 비주얼이 중요하지", scores: { social: 3, energy: 1 } },
+      { text: "🐶 내 사진 대신 캐릭터/반려동물 사진", scores: { introvert: 2, creative: 2 } },
+      { text: "🖼️ 감성 있는 풍경이나 오브제 사진", scores: { creative: 3, chill: 1 } },
+      { text: "🫥 기본 프사 그대로 두는 편", scores: { chill: 3, efficiency: 1 } }
+    ]
+  },
+  {
+    emoji: "📞",
+    text: "모르는 번호로 전화가 올 때 당신은?",
+    options: [
+      { text: "📱 일단 받는다. 중요한 전화일 수도!", scores: { energy: 2, social: 2 } },
+      { text: "🔇 씹고 나중에 문자로 확인", scores: { introvert: 2, efficiency: 2 } },
+      { text: "🔎 바로 검색해서 누군지 알아봄", scores: { order: 3, efficiency: 1 } },
+      { text: "😱 심장이 쿵! 전화 울음이 끝날 때까지 대기", scores: { introvert: 3, chill: 1 } }
+    ]
+  },
+  {
+    emoji: "🤖",
+    text: "AI 시대, 당신의 자세는?",
+    options: [
+      { text: "🚀 적극 활용! 생산성 최대치로 끌어올림", scores: { efficiency: 3, energy: 1 } },
+      { text: "🎨 창작 도구로 활용해서 재미있는 걸 만듦", scores: { creative: 3, energy: 1 } },
+      { text: "🤔 흥미롭지만 좀 더 지켜보는 중", scores: { chill: 2, order: 2 } },
+      { text: "💭 인간성에 대해 깊이 고민하게 됨", scores: { introvert: 2, creative: 2 } }
+    ]
+  }
+];
+
+const results = {
+  creative_introvert: {
+    emoji: "🌌", name: "고독한 크리에이터",
+    sub: "Digital Hermit Creator",
+    color: "#7c5cfc",
+    desc: "온라인에서도 자신만의 세계를 구축하는 당신! 남들이 유행을 따를 때, 당신은 이미 다음 트렌드를 만들고 있어요. 혼자만의 시간에 가장 빛나는 디지털 장인입니다. 깊은 사고와 독창적 시각이 당신의 무기예요.",
+    traits: [
+      { icon: "🎨", name: "창의력", pct: 95 },
+      { icon: "🧘", name: "독립성", pct: 90 },
+      { icon: "💡", name: "통찰력", pct: 85 },
+      { icon: "👥", name: "사교성", pct: 35 }
+    ],
+    good: "몽환적 큐레이터", bad: "소셜 버터플라이"
+  },
+  social_energy: {
+    emoji: "⚡", name: "소셜 버터플라이",
+    sub: "Digital Social Butterfly",
+    color: "#ff6b9d",
+    desc: "어디서든 주인공! 트렌드의 중심에 있는 당신은 디지털 세상의 인싸 중의 인싸입니다. 새로운 플랫폼이 나오면 가장 먼저 달려가고, 모든 단톡방의 핵심 인물이에요. 에너지 넘치는 당신이 있으면 분위기가 달라져요!",
+    traits: [
+      { icon: "🔥", name: "에너지", pct: 95 },
+      { icon: "💬", name: "소통력", pct: 92 },
+      { icon: "🎯", name: "추진력", pct: 88 },
+      { icon: "🧘", name: "여유", pct: 30 }
+    ],
+    good: "디지털 건축가", bad: "고독한 크리에이터"
+  },
+  order_efficiency: {
+    emoji: "🏗️", name: "디지털 건축가",
+    sub: "Digital Architect",
+    color: "#00d4aa",
+    desc: "체계적이고 효율적인 디지털 라이프의 달인! 알림 관리, 폴더 정리, 앱 배치까지 완벽한 당신은 디지털 세상의 건축가입니다. 데이터와 로직으로 세상을 이해하고, 최적의 시스템을 구축해요.",
+    traits: [
+      { icon: "📐", name: "체계성", pct: 95 },
+      { icon: "⚡", name: "효율성", pct: 92 },
+      { icon: "🧠", name: "분석력", pct: 88 },
+      { icon: "🎨", name: "즉흥성", pct: 28 }
+    ],
+    good: "소셜 버터플라이", bad: "디지털 노마드"
+  },
+  chill_introvert: {
+    emoji: "🌊", name: "디지털 노마드",
+    sub: "Digital Nomad Drifter",
+    color: "#ffd166",
+    desc: "유행에 휘둘리지 않는 자유로운 영혼! 디지털 세상을 떠돌며 필요한 것만 취하고, 나머지는 흘려보내는 여유로운 당신. 미니멀한 디지털 라이프를 추구하며, 진짜 중요한 것에만 시간을 씁니다.",
+    traits: [
+      { icon: "🌿", name: "여유", pct: 95 },
+      { icon: "🧘", name: "독립성", pct: 88 },
+      { icon: "🎯", name: "선택적 집중", pct: 82 },
+      { icon: "📱", name: "디지털 의존", pct: 25 }
+    ],
+    good: "고독한 크리에이터", bad: "소셜 버터플라이"
+  },
+  creative_energy: {
+    emoji: "🎆", name: "몽환적 큐레이터",
+    sub: "Digital Dream Curator",
+    color: "#c77dff",
+    desc: "디지털 세상을 하나의 갤러리로 만드는 당신! 밈을 수집하고, 피드를 예술로 바꾸며, 온라인 공간을 자신만의 미학으로 채워갑니다. 트렌드를 소비하는 게 아니라 재해석하는 감각의 소유자!",
+    traits: [
+      { icon: "🎨", name: "미적 감각", pct: 95 },
+      { icon: "🔥", name: "열정", pct: 85 },
+      { icon: "💡", name: "독창성", pct: 90 },
+      { icon: "📐", name: "체계성", pct: 40 }
+    ],
+    good: "디지털 건축가", bad: "디지털 노마드"
+  },
+  social_chill: {
+    emoji: "☕", name: "힐링 커넥터",
+    sub: "Digital Healing Connector",
+    color: "#ff9e7c",
+    desc: "따뜻한 에너지로 사람들을 연결하는 당신! 온라인에서도 편안한 분위기를 만들고, 모두가 쉬어갈 수 있는 공간을 제공합니다. 대립보다는 조화, 경쟁보다는 공존을 추구하는 디지털 힐러예요.",
+    traits: [
+      { icon: "💛", name: "공감력", pct: 95 },
+      { icon: "🌿", name: "여유", pct: 88 },
+      { icon: "💬", name: "소통력", pct: 82 },
+      { icon: "🔥", name: "적극성", pct: 42 }
+    ],
+    good: "소셜 버터플라이", bad: "디지털 건축가"
+  }
+};
+
+let current = 0;
+let scores = { creative: 0, introvert: 0, social: 0, energy: 0, chill: 0, order: 0, efficiency: 0 };
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function startTest() {
+  current = 0;
+  scores = { creative: 0, introvert: 0, social: 0, energy: 0, chill: 0, order: 0, efficiency: 0 };
+  showQuestion();
+}
+
+function showQuestion() {
+  show('question');
+  const q = questions[current];
+  document.getElementById('qEmoji').textContent = q.emoji;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('progNum').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progFill').style.width = `${((current) / questions.length) * 100}%`;
+
+  const opts = document.getElementById('opts');
+  opts.innerHTML = '';
+  q.options.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span>${o.text}</span>`;
+    btn.style.animationDelay = `${i * 0.08}s`;
+    btn.onclick = () => selectOption(o.scores);
+    opts.appendChild(btn);
+  });
+}
+
+function selectOption(s) {
+  Object.entries(s).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
+  current++;
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    document.getElementById('progFill').style.width = '100%';
+    setTimeout(() => {
+      show('loading');
+      setTimeout(showResult, 2200);
+    }, 300);
+  }
+}
+
+function getResultType() {
+  const dims = [
+    { key: 'creative', val: scores.creative },
+    { key: 'introvert', val: scores.introvert },
+    { key: 'social', val: scores.social },
+    { key: 'energy', val: scores.energy },
+    { key: 'chill', val: scores.chill },
+    { key: 'order', val: scores.order },
+    { key: 'efficiency', val: scores.efficiency }
+  ].sort((a, b) => b.val - a.val);
+
+  const top2 = [dims[0].key, dims[1].key];
+  const combos = {
+    'creative,introvert': 'creative_introvert',
+    'introvert,creative': 'creative_introvert',
+    'social,energy': 'social_energy',
+    'energy,social': 'social_energy',
+    'order,efficiency': 'order_efficiency',
+    'efficiency,order': 'order_efficiency',
+    'chill,introvert': 'chill_introvert',
+    'introvert,chill': 'chill_introvert',
+    'creative,energy': 'creative_energy',
+    'energy,creative': 'creative_energy',
+    'social,chill': 'social_chill',
+    'chill,social': 'social_chill',
+    'creative,chill': 'chill_introvert',
+    'creative,social': 'creative_energy',
+    'creative,order': 'creative_introvert',
+    'creative,efficiency': 'creative_introvert',
+    'introvert,energy': 'creative_introvert',
+    'introvert,social': 'chill_introvert',
+    'introvert,order': 'creative_introvert',
+    'introvert,efficiency': 'order_efficiency',
+    'social,order': 'social_energy',
+    'social,creative': 'creative_energy',
+    'social,introvert': 'social_chill',
+    'social,efficiency': 'social_energy',
+    'energy,chill': 'social_energy',
+    'energy,order': 'order_efficiency',
+    'energy,introvert': 'creative_energy',
+    'energy,efficiency': 'order_efficiency',
+    'chill,creative': 'chill_introvert',
+    'chill,energy': 'social_chill',
+    'chill,order': 'chill_introvert',
+    'chill,efficiency': 'chill_introvert',
+    'order,creative': 'order_efficiency',
+    'order,social': 'social_energy',
+    'order,energy': 'order_efficiency',
+    'order,introvert': 'order_efficiency',
+    'order,chill': 'chill_introvert',
+    'efficiency,creative': 'order_efficiency',
+    'efficiency,social': 'social_energy',
+    'efficiency,energy': 'order_efficiency',
+    'efficiency,introvert': 'order_efficiency',
+    'efficiency,chill': 'chill_introvert'
+  };
+
+  return results[combos[top2.join(',')] || 'creative_introvert'];
+}
+
+function showResult() {
+  const r = getResultType();
+  const el = document.getElementById('result');
+  el.innerHTML = `
+    <div class="result-card">
+      <div class="result-hero">
+        <div class="result-type-badge">YOUR DIGITAL PERSONA</div>
+        <div class="result-emoji">${r.emoji}</div>
+        <div class="result-name">${r.name}</div>
+        <div class="result-subtitle">${r.sub}</div>
+      </div>
+      <div class="result-body">
+        <p class="result-desc">${r.desc}</p>
+        <div class="trait-grid">
+          ${r.traits.map(t => `
+            <div class="trait">
+              <div class="trait-icon">${t.icon}</div>
+              <div class="trait-name">${t.name}</div>
+              <div class="trait-bar"><div class="trait-fill" data-pct="${t.pct}"></div></div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="compat-section">
+          <div class="compat-title">궁합</div>
+          <div class="compat-row">
+            <span class="compat-tag good">💚 ${r.good}</span>
+            <span class="compat-tag bad">💔 ${r.bad}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-share" onclick="shareResult()">결과 공유하기 📤</button>
+    <button class="btn-retry" onclick="startTest()">다시 테스트하기 🔄</button>
+    <div class="footer">나의 디지털 페르소나 테스트 · 2026</div>
+  `;
+  show('result');
+  setTimeout(() => {
+    document.querySelectorAll('.trait-fill').forEach(f => {
+      f.style.width = f.dataset.pct + '%';
+    });
+  }, 300);
+}
+
+function shareResult() {
+  const r = getResultType();
+  const text = `나의 디지털 페르소나는 "${r.name}" ${r.emoji}\n${r.sub}\n\n나도 테스트 해보기 👉`;
+  if (navigator.share) {
+    navigator.share({ title: '나의 디지털 페르소나 테스트', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.btn-share');
+      btn.textContent = '복사 완료! ✅';
+      setTimeout(() => btn.textContent = '결과 공유하기 📤', 2000);
+    });
+  }
+}
+</script>
+</body>
+</html>
