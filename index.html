@@ -690,7 +690,8 @@ function showResult() {
 
 function shareResult() {
   const r = getResultType();
-  const text = `나의 디지털 페르소나는 "${r.name}" ${r.emoji}\n${r.sub}\n\n나도 테스트 해보기 👉`;
+  const siteUrl = 'https://pesona-test.vercel.app/'
+  const text = `나의 디지털 페르소나는 "${r.name}" ${r.emoji}\n${r.sub}\n\n나도 테스트 해보기 👉 ${siteUrl}`
   if (navigator.share) {
     navigator.share({ title: '나의 디지털 페르소나 테스트', text });
   } else {
