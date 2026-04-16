@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>냉장고 파먹기 유형은?</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --card: #13131a;
+  --card-hover: #1a1a25;
+  --accent1: #7c5cfc;
+  --accent2: #ff6b9d;
+  --accent3: #00d4aa;
+  --accent4: #ffd166;
+  --text: #e8e6f0;
+  --text-dim: #8a879a;
+  --glass: rgba(124, 92, 252, 0.08);
+  --border: rgba(124, 92, 252, 0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.bg-orbs {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+}
+.orb {
+  position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+.orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+.orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+.orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+
+@keyframes orbFloat {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-20px) scale(1.05); }
+  66% { transform: translate(-20px,30px) scale(0.95); }
+}
+
+.container {
+  position: relative; z-index: 1;
+  max-width: 520px; margin: 0 auto; padding: 20px;
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+}
+
+.screen { display: none; animation: fadeUp 0.6s ease; }
+.screen.active { display: flex; flex-direction: column; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.intro-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--glass); border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 100px; font-size: 12px;
+  color: var(--accent1); width: fit-content; margin-bottom: 24px;
+  font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+}
+.intro-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.intro-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 42px; font-weight: 800; line-height: 1.15;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.intro-desc {
+  font-size: 15px; color: var(--text-dim); line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.intro-stats {
+  display: flex; gap: 12px; margin-bottom: 36px;
+}
+.stat {
+  flex: 1; background: var(--glass); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px; text-align: center;
+}
+.stat-num {
+  font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+.btn-start {
+  width: 100%; padding: 18px; border: none; border-radius: 16px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 17px; font-weight: 700; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #fff; position: relative; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124,92,252,0.4);
+}
+.btn-start::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+  transform: translateX(-100%); animation: shimmer 3s infinite;
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+.progress-wrap { margin-bottom: 32px; }
+.progress-info {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.progress-label {
+  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim);
+}
+.progress-num {
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+  color: var(--accent1);
+}
+.progress-bar {
+  width: 100%; height: 6px; background: rgba(124,92,252,0.12);
+  border-radius: 100px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.q-emoji {
+  font-size: 48px; margin-bottom: 16px;
+  animation: bounceIn 0.5s ease;
+}
+@keyframes bounceIn {
+  0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); }
+}
+
+.q-text {
+  font-size: 20px; font-weight: 700; line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.options { display: flex; flex-direction: column; gap: 12px; }
+
+.opt-btn {
+  width: 100%; padding: 16px 20px; border: 1px solid var(--border);
+  border-radius: 14px; background: var(--card);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px; color: var(--text); cursor: pointer;
+  text-align: left; transition: all 0.25s; position: relative;
+  overflow: hidden;
+}
+.opt-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  opacity: 0; transition: opacity 0.3s;
+}
+.opt-btn span { position: relative; z-index: 1; }
+
+@media (hover: hover) {
+  .opt-btn:hover {
+    border-color: var(--accent1);
+    transform: translateX(6px);
+    box-shadow: 0 4px 20px rgba(124,92,252,0.15);
+  }
+  .opt-btn:hover::before { opacity: 0.12; }
+}
+.opt-btn:active {
+  border-color: var(--accent1);
+  transform: translateX(6px) scale(0.98);
+  box-shadow: 0 4px 20px rgba(124,92,252,0.15);
+}
+.opt-btn:active::before { opacity: 0.12; }
+
+.loading-screen {
+  align-items: center; justify-content: center; text-align: center;
+  min-height: 60vh;
+}
+.loader-ring {
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent1); border-right-color: var(--accent2);
+  animation: spin 1s linear infinite;
+  margin-bottom: 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+.loading-sub {
+  font-size: 13px; color: var(--text-dim);
+  animation: pulse 2s infinite;
+}
+
+.result-screen { align-items: center; }
+
+.result-card {
+  width: 100%; border-radius: 24px; overflow: hidden;
+  background: var(--card); border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.result-hero {
+  padding: 40px 32px 24px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.result-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  opacity: 0.08;
+}
+.result-type-badge {
+  display: inline-block; padding: 4px 14px; border-radius: 100px;
+  font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(255,255,255,0.1); color: var(--accent4);
+  margin-bottom: 12px; position: relative;
+}
+.result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+.result-name {
+  font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+  position: relative;
+  background: linear-gradient(135deg, #fff, var(--accent1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.result-subtitle {
+  font-size: 14px; color: var(--text-dim); margin-top: 8px;
+  position: relative;
+}
+
+.result-body { padding: 24px 28px 28px; }
+
+.result-desc {
+  font-size: 14px; line-height: 1.8; color: var(--text-dim);
+  margin-bottom: 24px; word-break: keep-all;
+}
+
+.trait-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 24px;
+}
+.trait {
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px; text-align: center;
+}
+.trait-icon { font-size: 22px; margin-bottom: 6px; }
+.trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.trait-bar {
+  margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06);
+  border-radius: 100px; overflow: hidden;
+}
+.trait-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent3));
+  transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+  width: 0;
+}
+
+.compat-section { margin-bottom: 20px; }
+.compat-title {
+  font-size: 12px; font-weight: 600; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+}
+.compat-row { display: flex; gap: 8px; }
+.compat-tag {
+  padding: 6px 14px; border-radius: 100px; font-size: 12px;
+  background: var(--glass); border: 1px solid var(--border);
+}
+.compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+.compat-tag.bad { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+.btn-retry {
+  width: 100%; padding: 16px; border: 1px solid var(--border);
+  border-radius: 14px; background: var(--card);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-retry:hover {
+  border-color: var(--accent1);
+  background: var(--card-hover);
+}
+
+.btn-share {
+  width: 100%; padding: 16px; border: none; border-radius: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #fff; margin-bottom: 10px;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+.btn-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124,92,252,0.4);
+}
+
+.footer {
+  text-align: center; margin-top: 20px;
+  font-size: 11px; color: var(--text-dim);
+  opacity: 0.5;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> 2026 냉장고 생존 테스트</div>
+    <h1 class="intro-title">냉장고<br>파먹기 유형은?</h1>
+    <p class="intro-desc">남은 재료로 알아보는 나의 생존 본능 🧊</p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num">6</div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startTest()">테스트 시작하기 →</button>
+  </div>
+
+  <div class="screen" id="question">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="progNum">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+    <div class="q-emoji" id="qEmoji"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="opts"></div>
+  </div>
+
+  <div class="screen loading-screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 결과를 계산하는 중 🧬</div>
+  </div>
+
+  <div class="screen result-screen" id="result"></div>
+
+</div>
+
+<script>
+// ===== 테스트 데이터 (Go 렌더러가 주입) =====
+const TEST_META = {"badge":"2026 냉장고 생존 테스트","emoji":"🧊","questionCount":8,"resultBadge":"YOUR FRIDGE SURVIVAL TYPE","resultCount":6,"shareUrl":"https://persona-test.vercel.app/fridge-type","subtitle":"남은 재료로 알아보는 나의 생존 본능 🧊","title":"냉장고 파먹기 유형은?"};
+const questions = [{"emoji":"🚪","options":[{"scores":{"creative":3,"instinct":1},"text":"🧠 있는 재료로 뭔가 만들 수 있을 것 같은데..."},{"scores":{"chaos":1,"lazy":3},"text":"📱 바로 배달앱 켬. 고민 끝."},{"scores":{"gourmet":1,"planner":3},"text":"📋 장볼 목록 작성 시작. 이래서 미리 사뒀어야 했는데"},{"scores":{"creative":1,"instinct":3},"text":"😤 일단 냉동실이라도 뒤져봄"}],"text":"냉장고 문을 열었는데 텅 비어있다. 첫 번째 반응은?"},{"emoji":"🥚","options":[{"scores":{"instinct":1,"lazy":3},"text":"🍳 계란후라이 후다닥. 뭐든 먹으면 장땡"},{"scores":{"chaos":3,"creative":1},"text":"🍜 라면에 풀어넣기. 황금 조합이지"},{"scores":{"creative":1,"gourmet":3},"text":"🥗 스크램블 에그에 채소 볶아서 근사하게"},{"scores":{"healthy":1,"planner":3},"text":"🤔 나중에 쓸 것 같아서 일단 보존"}],"text":"냉장고에 달걀 2개가 남았다. 어떻게 할 것 같아?"},{"emoji":"🍚","options":[{"scores":{"creative":3,"gourmet":1},"text":"🍳 볶음밥으로 화려하게 변신시킴"},{"scores":{"instinct":1,"lazy":3},"text":"🥣 그냥 전자레인지에 돌려서 먹음"},{"scores":{"chaos":1,"instinct":3},"text":"🌶️ 참기름+간장+김+계란 = 비빔밥 완성"},{"scores":{"healthy":3,"planner":1},"text":"🗑️ 상한 것 같으면 바로 버림. 건강이 최고야"}],"text":"찬밥이 한 공기 있다. 이 상황, 어떻게 처리해?"},{"emoji":"🧅","options":[{"scores":{"chaos":1,"creative":3},"text":"🍛 오 이거 카레 가능한데?! 바로 도전"},{"scores":{"healthy":3,"lazy":1},"text":"🥕 그냥 쪄서 소금에 찍어먹음. 건강식이야"},{"scores":{"gourmet":3,"planner":1},"text":"🛒 이걸로는 한계. 마트 가서 고기 사옴"},{"scores":{"creative":1,"instinct":3},"text":"🍲 감자국이라도 끓이면 됨. 뭐든 국 되잖아"}],"text":"양파, 감자, 당근만 남아있는 상황. 너의 선택은?"},{"emoji":"⏰","options":[{"scores":{"chaos":1,"lazy":3},"text":"🍜 인스턴트 최고! 라면 or 냉동밥 투척"},{"scores":{"creative":2,"instinct":2},"text":"🥪 있는 거 다 꺼내서 샌드위치 만듦"},{"scores":{"healthy":1,"planner":3},"text":"🍱 아 이래서 미리 도시락 싸뒀어야 했는데"},{"scores":{"instinct":3,"lazy":1},"text":"🍽️ 반찬 꺼내서 밥만 지어 먹음. 효율의 신"}],"text":"밥 먹을 시간은 10분뿐! 냉장고엔 재료들이 있어. 어떻게 해?"},{"emoji":"🫙","options":[{"scores":{"creative":2,"gourmet":2},"text":"🧑‍🍳 오늘 저녁에 다 털어서 요리 한 판 함"},{"scores":{"chaos":3,"instinct":1},"text":"🤷 유통기한은 그냥 권고사항임. 먹어봐야 앎"},{"scores":{"healthy":1,"planner":3},"text":"📅 애초에 이렇게 안 되도록 식단 미리 짬"},{"scores":{"healthy":3,"lazy":1},"text":"🗑️ 2일이면 충분히 위험. 쿨하게 버림"}],"text":"유통기한이 2일 남은 재료들 발견! 어떡해?"},{"emoji":"🍕","options":[{"scores":{"creative":1,"gourmet":3},"text":"🔥 에어프라이어에 돌려서 근사하게 먹음"},{"scores":{"chaos":3,"lazy":1},"text":"❄️ 차갑게 그냥 먹음. 이게 진짜 피자 맛"},{"scores":{"healthy":3,"planner":1},"text":"🥗 피자는 아침 음식이 아님. 샐러드 만들어 먹음"},{"scores":{"creative":3,"instinct":1},"text":"🍳 계란 올려서 피자 프리타타? 실험 정신 발동"}],"text":"어젯밤 피자 한 조각이 남아있다. 아침 메뉴로 어때?"},{"emoji":"🏆","options":[{"scores":{"creative":1,"gourmet":3},"text":"🍽️ 맛있는 한 끼를 완성했으면 그게 성공"},{"scores":{"healthy":2,"planner":2},"text":"🗑️ 냉장고가 깔끔하게 비워졌으면 됨"},{"scores":{"instinct":3,"lazy":1},"text":"😮‍💨 일단 굶지 않았으면 성공이지"},{"scores":{"chaos":3,"creative":1},"text":"🤣 먹다가 웃긴 조합 발견하면 그것도 성공"}],"text":"냉장고 파먹기 챌린지 성공 기준은 나한테 뭐야?"}];
+const results = {"chaos_instinct":{"bad":"냉장고 플래너","color":"#ffd93d","desc":"냉장고 파먹기? 그냥 일상임. 유통기한은 참고사항이고 조합 따위는 없어도 돼! 먹고 살아있으면 성공이라는 초강력 생존 본능의 소유자예요. 당신의 냉장고는 매일 새로운 이야기를 씁니다.","emoji":"🌀","good":"냉장고 생존러","name":"카오스 쿡","sub":"Chaos Cook","traits":[{"icon":"⚡","name":"즉흥력","pct":95},{"icon":"💪","name":"생존 본능","pct":90},{"icon":"🎲","name":"모험심","pct":85},{"icon":"📋","name":"계획성","pct":20}]},"creative_chaos":{"bad":"헬시 매니저","color":"#fd79a8","desc":"피자에 계란 올리고 남은 반찬으로 볶음밥 만드는 게 당신에게는 일상이에요. 정해진 레시피는 지루하고, 실험적인 조합에서 오히려 인생 메뉴를 발견하는 천재 타입! 주변에 항상 맛 보여주고 싶어서 안달입니다.","emoji":"🔬","good":"냉장고 마스터셰프","name":"냉장고 실험가","sub":"Fridge Experimentalist","traits":[{"icon":"🔬","name":"실험 정신","pct":95},{"icon":"🎨","name":"창의력","pct":92},{"icon":"😂","name":"유머력","pct":88},{"icon":"📏","name":"정확도","pct":30}]},"creative_gourmet":{"bad":"카오스 쿡","color":"#ff6b6b","desc":"남들 눈엔 쓰레기, 당신 눈엔 식재료! 있는 재료로 요리 한 판 뚝딱 만들어내는 타입이에요. 레시피 따위 없어도 본능적으로 맛있는 조합을 알아내는 주방의 신입니다.","emoji":"🧑‍🍳","good":"냉장고 플래너","name":"냉장고 마스터셰프","sub":"Fridge Masterchef","traits":[{"icon":"🍳","name":"요리 창의력","pct":95},{"icon":"👅","name":"미각 감각","pct":90},{"icon":"🎨","name":"재료 활용력","pct":88},{"icon":"📋","name":"계획성","pct":30}]},"healthy_planner":{"bad":"카오스 쿡","color":"#55efc4","desc":"냉장고는 곧 건강 관리 도구! 유통기한 지난 건 과감히 버리고, 남은 재료로도 최대한 건강식을 만들어내는 타입이에요. 당신의 냉장고에는 언제나 샐러드 재료와 삶은 달걀이 있습니다.","emoji":"🥗","good":"냉장고 플래너","name":"헬시 매니저","sub":"Healthy Fridge Manager","traits":[{"icon":"🥦","name":"건강력","pct":95},{"icon":"📊","name":"관리력","pct":90},{"icon":"🗑️","name":"정리력","pct":85},{"icon":"🍕","name":"먹방 본능","pct":28}]},"lazy_instinct":{"bad":"냉장고 플래너","color":"#a29bfe","desc":"요리는 최소한으로, 먹는 건 확실하게! 계란후라이와 라면은 세상 모든 문제를 해결하는 솔루션이에요. 굶지 않으면 그날은 성공이라는 실용적인 삶의 철학을 가진 현실주의자입니다.","emoji":"🛋️","good":"카오스 쿡","name":"냉장고 생존러","sub":"Fridge Survivor","traits":[{"icon":"😴","name":"에너지 절약","pct":95},{"icon":"⚡","name":"빠른 판단","pct":88},{"icon":"🍜","name":"인스턴트 활용","pct":92},{"icon":"🧑‍🍳","name":"요리 열정","pct":25}]},"planner_healthy":{"bad":"카오스 쿡","color":"#4ecdc4","desc":"냉장고 파먹기도 전략이 있어야 한다고 믿는 타입! 유통기한 순서대로 먹고, 식단을 미리 짜두는 당신은 사실 냉장고 파먹기가 필요 없는 사람입니다. 그냥 항상 완벽하게 관리하거든요.","emoji":"📋","good":"냉장고 마스터셰프","name":"냉장고 플래너","sub":"Fridge Planner","traits":[{"icon":"📅","name":"계획력","pct":95},{"icon":"🥗","name":"건강 관리","pct":92},{"icon":"🗂️","name":"정리력","pct":88},{"icon":"🌶️","name":"즉흥력","pct":22}]}};
+const combos = {"chaos,creative":"creative_chaos","chaos,gourmet":"creative_chaos","chaos,instinct":"chaos_instinct","chaos,lazy":"chaos_instinct","chaos,planner":"planner_healthy","creative,chaos":"creative_chaos","creative,gourmet":"creative_gourmet","creative,healthy":"creative_gourmet","creative,instinct":"creative_gourmet","creative,lazy":"creative_chaos","creative,planner":"planner_healthy","gourmet,chaos":"creative_chaos","gourmet,creative":"creative_gourmet","gourmet,healthy":"healthy_planner","gourmet,instinct":"creative_gourmet","gourmet,lazy":"lazy_instinct","gourmet,planner":"planner_healthy","healthy,creative":"creative_gourmet","healthy,gourmet":"healthy_planner","healthy,instinct":"healthy_planner","healthy,lazy":"lazy_instinct","healthy,planner":"healthy_planner","instinct,chaos":"chaos_instinct","instinct,creative":"creative_gourmet","instinct,gourmet":"creative_gourmet","instinct,healthy":"lazy_instinct","instinct,lazy":"lazy_instinct","instinct,planner":"chaos_instinct","lazy,chaos":"chaos_instinct","lazy,creative":"creative_chaos","lazy,gourmet":"creative_gourmet","lazy,healthy":"healthy_planner","lazy,instinct":"lazy_instinct","lazy,planner":"planner_healthy","planner,chaos":"chaos_instinct","planner,creative":"creative_gourmet","planner,gourmet":"creative_gourmet","planner,healthy":"planner_healthy","planner,instinct":"planner_healthy","planner,lazy":"lazy_instinct"};
+const scoreKeys = ["creative","lazy","planner","gourmet","chaos","instinct","healthy"];
+
+// ===== 상태 =====
+let current = 0;
+let scores = {};
+scoreKeys.forEach(k => scores[k] = 0);
+
+// ===== 화면 전환 =====
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function startTest() {
+  current = 0;
+  scores = {};
+  scoreKeys.forEach(k => scores[k] = 0);
+  showQuestion();
+}
+
+function showQuestion() {
+  show('question');
+  const q = questions[current];
+  document.getElementById('qEmoji').textContent = q.emoji;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('progNum').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progFill').style.width = `${(current / questions.length) * 100}%`;
+
+  const opts = document.getElementById('opts');
+  opts.innerHTML = '';
+  q.options.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span>${o.text}</span>`;
+    btn.style.animationDelay = `${i * 0.08}s`;
+    btn.onclick = () => selectOption(o.scores);
+    opts.appendChild(btn);
+  });
+}
+
+function selectOption(s) {
+  Object.entries(s).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
+  current++;
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    document.getElementById('progFill').style.width = '100%';
+    setTimeout(() => {
+      show('loading');
+      setTimeout(showResult, 2200);
+    }, 300);
+  }
+}
+
+function getResultType() {
+  const dims = scoreKeys.map(k => ({ key: k, val: scores[k] || 0 }))
+    .sort((a, b) => b.val - a.val);
+  const top2 = [dims[0].key, dims[1].key];
+  const fallback = Object.keys(results)[0];
+  return results[combos[top2.join(',')] || fallback];
+}
+
+function showResult() {
+  const r = getResultType();
+  const el = document.getElementById('result');
+  el.innerHTML = `
+    <div class="result-card">
+      <div class="result-hero">
+        <div class="result-type-badge">${TEST_META.resultBadge}</div>
+        <div class="result-emoji">${r.emoji}</div>
+        <div class="result-name">${r.name}</div>
+        <div class="result-subtitle">${r.sub}</div>
+      </div>
+      <div class="result-body">
+        <p class="result-desc">${r.desc}</p>
+        <div class="trait-grid">
+          ${r.traits.map(t => `
+            <div class="trait">
+              <div class="trait-icon">${t.icon}</div>
+              <div class="trait-name">${t.name}</div>
+              <div class="trait-bar"><div class="trait-fill" data-pct="${t.pct}"></div></div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="compat-section">
+          <div class="compat-title">궁합</div>
+          <div class="compat-row">
+            <span class="compat-tag good">💚 ${r.good}</span>
+            <span class="compat-tag bad">💔 ${r.bad}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-share" onclick="shareResult()">결과 공유하기 📤</button>
+    <button class="btn-retry" onclick="startTest()">다시 테스트하기 🔄</button>
+    <div class="footer">${TEST_META.title} · 2026</div>
+  `;
+  show('result');
+  setTimeout(() => {
+    document.querySelectorAll('.trait-fill').forEach(f => {
+      f.style.width = f.dataset.pct + '%';
+    });
+  }, 300);
+}
+
+function shareResult() {
+  const r = getResultType();
+  const text = `나의 결과는 "${r.name}" ${r.emoji}\n${r.sub}\n\n나도 테스트 해보기 👉 ${window.location.href}`;
+  if (navigator.share) {
+    navigator.share({ title: TEST_META.title, text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.btn-share');
+      btn.textContent = '복사 완료! ✅';
+      setTimeout(() => btn.textContent = '결과 공유하기 📤', 2000);
+    });
+  }
+}
+</script>
+</body>
+</html>
