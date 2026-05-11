@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>단톡방에서 나는 어떤 존재인가?</title>
+  <meta property="og:title" content="단톡방에서 나는 어떤 존재인가?" />
+  <meta property="og:description" content="카톡 읽씹부터 짤부자까지, 당신의 단톡 유형 🫧" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --theme: #f0f0f0;
+      --theme-dim: rgba(240,240,240,0.12);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Noto Sans KR', sans-serif;
+      background: #111;
+      color: #f0f0f0;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding: 0 16px;
+    }
+
+    .screen { display: none; flex-direction: column; flex: 1; padding: 40px 0 32px; }
+    .screen.active { display: flex; }
+
+    /* intro */
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 5px 14px;
+      color: #aaa;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      align-self: flex-start;
+    }
+    .intro-emoji { font-size: 72px; margin-bottom: 24px; line-height: 1; }
+    .intro-title { font-size: 26px; font-weight: 800; line-height: 1.35; margin-bottom: 14px; }
+    .intro-sub   { font-size: 15px; color: #888; line-height: 1.6; margin-bottom: 40px; }
+
+    .btn-start {
+      background: #f0f0f0;
+      color: #111;
+      border: none;
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity .15s;
+    }
+    .btn-start:hover { opacity: .85; }
+    .intro-count { text-align: center; color: #555; font-size: 13px; margin-top: 16px; }
+
+    /* quiz */
+    .progress-bar {
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--theme);
+      border-radius: 99px;
+      transition: width .35s ease;
+    }
+    .q-count { font-size: 12px; color: #555; margin-bottom: 10px; font-weight: 600; letter-spacing: .06em; }
+    .q-emoji { font-size: 40px; margin-bottom: 16px; }
+    .q-text  { font-size: 20px; font-weight: 700; line-height: 1.45; margin-bottom: 28px; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 16px 18px;
+      font-size: 15px;
+      color: #e8e8e8;
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.5;
+      transition: background .15s, border-color .15s, transform .1s;
+    }
+    .option-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.3);
+      transform: translateY(-1px);
+    }
+    .option-btn.selected {
+      background: var(--theme-dim);
+      border-color: var(--theme);
+    }
+
+    /* result */
+    #result { padding-top: 0; }
+    .result-header {
+      padding: 48px 24px 32px;
+      margin: 0 -16px;
+      text-align: center;
+      border-radius: 0 0 32px 32px;
+      margin-bottom: 28px;
+    }
+    .result-badge {
+      display: inline-block;
+      background: rgba(0,0,0,0.2);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      padding: 5px 14px;
+      color: rgba(0,0,0,0.6);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .result-emoji { font-size: 72px; margin-bottom: 16px; }
+    .result-name  { font-size: 26px; font-weight: 800; color: #111; margin-bottom: 6px; }
+    .result-sub   { font-size: 13px; font-weight: 600; color: rgba(0,0,0,0.45); letter-spacing: .08em; text-transform: uppercase; }
+    .result-desc  { font-size: 15px; line-height: 1.75; color: #ccc; margin-bottom: 28px; word-break: keep-all; }
+
+    .traits-title { font-size: 13px; font-weight: 700; color: #555; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 14px; }
+    .trait { margin-bottom: 14px; }
+    .trait-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .trait-name { font-size: 14px; font-weight: 600; }
+    .trait-pct  { font-size: 13px; color: #888; }
+    .trait-bar  { height: 6px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+    .trait-fill { height: 100%; border-radius: 99px; width: 0; transition: width 1s ease; }
+
+    .compat {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 28px 0;
+    }
+    .compat-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .compat-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #555; text-transform: uppercase; margin-bottom: 6px; }
+    .compat-name  { font-size: 14px; font-weight: 700; }
+
+    .btn-share {
+      background: #f0f0f0;
+      color: #111;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
+      transition: opacity .15s;
+    }
+    .btn-share:hover { opacity: .85; }
+    .btn-retry {
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #ccc;
+      cursor: pointer;
+      width: 100%;
+      transition: background .15s;
+    }
+    .btn-retry:hover { background: rgba(255,255,255,0.14); }
+
+    /* analyzing */
+    #analyzing {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 0;
+    }
+    .analyzing-emoji { font-size: 56px; margin-bottom: 32px; animation: pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1);   opacity: 1; }
+      50%       { transform: scale(1.1); opacity: .7; }
+    }
+    .analyzing-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .analyzing-sub   { font-size: 14px; color: #666; margin-bottom: 40px; }
+    .analyzing-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .analyzing-fill {
+      height: 100%;
+      background: var(--theme);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 2.4s cubic-bezier(.4,0,.2,1);
+    }
+
+    @media (max-width: 400px) {
+      .intro-title { font-size: 22px; }
+      .q-text { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="intro" class="screen active">
+    <span class="badge" id="intro-badge"></span>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-sub" id="intro-sub"></p>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+    <p class="intro-count" id="intro-count"></p>
+  </div>
+
+  <div id="quiz" class="screen">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="q-count" id="q-count"></div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <div id="analyzing" class="screen">
+    <div class="analyzing-emoji" id="analyzing-emoji">🤖</div>
+    <div class="analyzing-title">AI가 분석 중이에요</div>
+    <div class="analyzing-sub">당신의 답변을 해석하고 있어요...</div>
+    <div class="analyzing-bar"><div class="analyzing-fill" id="analyzing-fill"></div></div>
+  </div>
+
+  <div id="result" class="screen">
+    <div class="result-header" id="result-header">
+      <div class="result-badge" id="result-badge"></div>
+      <div class="result-emoji" id="result-emoji"></div>
+      <div class="result-name"  id="result-name"></div>
+      <div class="result-sub"   id="result-sub"></div>
+    </div>
+    <p class="result-desc" id="result-desc"></p>
+    <div class="traits-title">나의 지표</div>
+    <div id="traits"></div>
+    <div class="compat" id="compat"></div>
+    <button class="btn-share" onclick="share()">결과 공유하기 🔗</button>
+    <button class="btn-retry" onclick="retry()">다시 테스트하기</button>
+  </div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "단톡방에서 나는 어떤 존재인가?",
+    "subtitle": "카톡 읽씹부터 짤부자까지, 당신의 단톡 유형 🫧",
+    "badge": "2026 단톡방 성격 테스트",
+    "emoji": "💬",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://persona-test.vercel.app/group-chat-type",
+    "resultBadge": "YOUR GROUP CHAT PERSONA"
+  },
+
+  "scoreKeys": ["lurker", "moodmaker", "leader", "reactor", "informer", "ghosting", "spammer"],
+
+  "questions": [
+    {
+      "emoji": "🔔",
+      "text": "단톡방 알림이 100개 쌓여있다. 당신의 반응은?",
+      "options": [
+        { "text": "📖 처음부터 다 읽음. 맥락이 있어야 함", "scores": { "informer": 3, "leader": 1 } },
+        { "text": "👀 마지막 몇 개만 슥 읽고 파악", "scores": { "lurker": 3, "ghosting": 1 } },
+        { "text": "🧹 전체 선택 → 읽음 처리 → 완료", "scores": { "ghosting": 3, "lurker": 1 } },
+        { "text": "😤 알림 끄고 나중에 볼게요~", "scores": { "ghosting": 2, "lurker": 2 } }
+      ]
+    },
+    {
+      "emoji": "😂",
+      "text": "단톡방에서 웃긴 대화가 오가고 있을 때 나는?",
+      "options": [
+        { "text": "🤣 'ㅋㅋㅋㅋㅋㅋ' 연타로 참여", "scores": { "reactor": 3, "moodmaker": 1 } },
+        { "text": "🖼️ 찰떡 짤 하나 투척하고 빠짐", "scores": { "moodmaker": 3, "reactor": 1 } },
+        { "text": "😶 혼자 웃으며 읽기만 함", "scores": { "lurker": 3, "ghosting": 1 } },
+        { "text": "🔥 더 웃긴 드립 추가해서 분위기 업시킴", "scores": { "moodmaker": 2, "spammer": 2 } }
+      ]
+    },
+    {
+      "emoji": "📢",
+      "text": "단톡방에서 중요한 공지가 올라왔다. 나는?",
+      "options": [
+        { "text": "✅ 확인했다고 바로 답장", "scores": { "reactor": 3, "leader": 1 } },
+        { "text": "📌 읽었는데 굳이 답장은 안 함", "scores": { "lurker": 2, "ghosting": 2 } },
+        { "text": "📣 '저도요!' '저두요!' '저두욤!' 릴레이 시작", "scores": { "spammer": 3, "reactor": 1 } },
+        { "text": "🗂️ 공지 요약해서 다시 정리해줌", "scores": { "informer": 3, "leader": 2 } }
+      ]
+    },
+    {
+      "emoji": "🤐",
+      "text": "단톡방이 3일째 조용하다. 당신은?",
+      "options": [
+        { "text": "🎲 '야 다들 살아있냐' 하고 분위기 깸", "scores": { "moodmaker": 3, "spammer": 1 } },
+        { "text": "😌 조용한 거 좋음. 나도 조용히 있음", "scores": { "lurker": 3, "ghosting": 1 } },
+        { "text": "📰 관련 뉴스나 짤 하나 던져서 시동 걸기", "scores": { "informer": 3, "moodmaker": 1 } },
+        { "text": "📋 'OO 관련해서 얘기해야 할 거 있음!' 하고 주제 제시", "scores": { "leader": 3, "informer": 1 } }
+      ]
+    },
+    {
+      "emoji": "💢",
+      "text": "단톡방에서 내 얘기가 완전 씹혔을 때?",
+      "options": [
+        { "text": "😅 그냥 넘어감. 나만 아는 거니까", "scores": { "lurker": 3, "ghosting": 1 } },
+        { "text": "😤 다시 한번 더 보냄 (더 크게)", "scores": { "spammer": 3, "reactor": 1 } },
+        { "text": "🙁 은근히 상처받고 조용해짐", "scores": { "ghosting": 3, "lurker": 1 } },
+        { "text": "😂 '아 ㅋㅋ 제 말은요-' 하고 셀프 리마인드", "scores": { "moodmaker": 2, "reactor": 2 } }
+      ]
+    },
+    {
+      "emoji": "🗳️",
+      "text": "단톡방에서 의견 투표가 생겼다. 나는?",
+      "options": [
+        { "text": "✋ 제일 먼저 투표하고 '빨리 해요~' 독촉", "scores": { "leader": 3, "spammer": 1 } },
+        { "text": "🔍 다수가 어디로 쏠리나 보다가 투표", "scores": { "lurker": 2, "reactor": 2 } },
+        { "text": "📊 투표 결과 분석해서 공유해줌", "scores": { "informer": 3, "leader": 1 } },
+        { "text": "🙈 투표가 있었는지도 몰랐음", "scores": { "ghosting": 3, "lurker": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌙",
+      "text": "밤 12시에 단톡방이 갑자기 활성화됐다. 나는?",
+      "options": [
+        { "text": "😴 새벽에 일어나서 정독함", "scores": { "informer": 2, "reactor": 2 } },
+        { "text": "🎉 오히려 좋아! 심야 토크 동참", "scores": { "moodmaker": 3, "spammer": 1 } },
+        { "text": "🔕 알림 끄고 잠 자고 내일 봄", "scores": { "ghosting": 3, "lurker": 1 } },
+        { "text": "😬 읽긴 하는데 답장은 못 하겠음 (눈치 보임)", "scores": { "lurker": 3, "ghosting": 1 } }
+      ]
+    },
+    {
+      "emoji": "🎭",
+      "text": "단톡방에서 내 포지션을 한 마디로 하면?",
+      "options": [
+        { "text": "🕵️ '항상 읽고 있지만 존재감은 없는 자'", "scores": { "lurker": 3, "ghosting": 1 } },
+        { "text": "🎪 '분위기 메이커, 없으면 허전한 그 사람'", "scores": { "moodmaker": 3, "spammer": 1 } },
+        { "text": "📡 '정보 공유 담당, 필요한 거 있으면 나한테'", "scores": { "informer": 3, "leader": 1 } },
+        { "text": "👑 '자연스럽게 대화 이끌고 있는 방장 기질'", "scores": { "leader": 3, "informer": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "lurker_ghosting": {
+      "emoji": "👻",
+      "name": "투명 관찰러",
+      "sub": "Silent Ghost Watcher",
+      "color": "#9b8ec4",
+      "desc": "읽씹의 달인... 하지만 다 보고 있다는 거 알죠? 단톡방 내용은 누구보다 꿰고 있지만 굳이 티는 안 내는 스타일이에요. '그때 그 얘기 나왔잖아~' 하면 다 기억하는 사람이 바로 당신.",
+      "traits": [
+        { "icon": "👀", "name": "관찰력", "pct": 95 },
+        { "icon": "🤐", "name": "과묵함", "pct": 90 },
+        { "icon": "🧠", "name": "기억력", "pct": 85 },
+        { "icon": "📢", "name": "존재감", "pct": 22 }
+      ],
+      "good": "정보 브리핑러",
+      "bad": "분위기 메이커"
+    },
+    "moodmaker_spammer": {
+      "emoji": "🎪",
+      "name": "분위기 메이커",
+      "sub": "Vibe Igniter",
+      "color": "#ff6b9d",
+      "desc": "단톡방에 이 사람 없으면 진짜 쓸쓸해짐. 짤, 드립, 갑작스러운 스티커까지 분위기를 살리는 건 당신의 사명이에요. 가끔 혼자 신나서 3연속 보내는 것도... 뭐 매력이라고 해두자.",
+      "traits": [
+        { "icon": "🎉", "name": "분위기력", "pct": 95 },
+        { "icon": "😂", "name": "유머감각", "pct": 92 },
+        { "icon": "⚡", "name": "활발함", "pct": 88 },
+        { "icon": "🤫", "name": "자제력", "pct": 28 }
+      ],
+      "good": "리액션 장인",
+      "bad": "투명 관찰러"
+    },
+    "leader_informer": {
+      "emoji": "👑",
+      "name": "단톡방 방장 기질",
+      "sub": "Natural Chat Leader",
+      "color": "#ffd166",
+      "desc": "방장 아니어도 방장 같은 사람. 대화 흐름 잡기, 공지 정리, 의견 취합까지 자연스럽게 리드하는 당신. 이런 사람 하나 있는 단톡방은 진짜 텐션이 달라요.",
+      "traits": [
+        { "icon": "📋", "name": "리더십", "pct": 95 },
+        { "icon": "🗂️", "name": "정리력", "pct": 90 },
+        { "icon": "📣", "name": "추진력", "pct": 87 },
+        { "icon": "😌", "name": "눈치력", "pct": 35 }
+      ],
+      "good": "정보 브리핑러",
+      "bad": "투명 관찰러"
+    },
+    "reactor_moodmaker": {
+      "emoji": "🙌",
+      "name": "리액션 장인",
+      "sub": "Reaction Master",
+      "color": "#00d4aa",
+      "desc": "'ㅋㅋㅋㅋㅋ' 하나로 분위기를 살리는 당신. 딱히 대화를 이끌진 않지만 누군가 재밌는 말 하면 가장 먼저, 가장 크게 반응해주는 든든한 리액터예요. 이 사람 없으면 단톡방이 허전한 이유가 있죠.",
+      "traits": [
+        { "icon": "🎯", "name": "리액션", "pct": 95 },
+        { "icon": "💛", "name": "공감력", "pct": 88 },
+        { "icon": "😂", "name": "텐션", "pct": 85 },
+        { "icon": "📢", "name": "주도력", "pct": 30 }
+      ],
+      "good": "분위기 메이커",
+      "bad": "투명 관찰러"
+    },
+    "informer_leader": {
+      "emoji": "📡",
+      "name": "정보 브리핑러",
+      "sub": "Info Briefing Bot",
+      "color": "#74b9ff",
+      "desc": "단톡방의 살아있는 알림센터. 필요한 정보, 유용한 링크, 요약 정리까지 단톡방 퀄리티를 혼자 올리는 사람이에요. 이 사람한테 물어보면 다 해결되는 그 느낌, 진짜 무한 신뢰.",
+      "traits": [
+        { "icon": "📰", "name": "정보력", "pct": 95 },
+        { "icon": "🔍", "name": "분석력", "pct": 90 },
+        { "icon": "📌", "name": "꼼꼼함", "pct": 88 },
+        { "icon": "🎪", "name": "유머", "pct": 32 }
+      ],
+      "good": "단톡방 방장 기질",
+      "bad": "분위기 메이커"
+    },
+    "ghosting_lurker": {
+      "emoji": "🌫️",
+      "name": "읽씹 신공러",
+      "sub": "Master of Read & Disappear",
+      "color": "#a8a8b3",
+      "desc": "읽은 건지 안 읽은 건지 알 수가 없는 사람. 오프라인에서 만나면 멀쩡한데 단톡방에서만 유독 증발하는 신기한 유형이에요. 답장 안 해도 나름의 이유가 있다는 거, 그냥 쉬고 싶은 거 맞죠?",
+      "traits": [
+        { "icon": "🌫️", "name": "존재감 소멸", "pct": 95 },
+        { "icon": "🔕", "name": "알림 차단", "pct": 88 },
+        { "icon": "😌", "name": "자유로움", "pct": 85 },
+        { "icon": "💬", "name": "소통력", "pct": 20 }
+      ],
+      "good": "투명 관찰러",
+      "bad": "리액션 장인"
+    }
+  },
+
+  "combos": {
+    "lurker,ghosting": "lurker_ghosting",
+    "ghosting,lurker": "lurker_ghosting",
+    "moodmaker,spammer": "moodmaker_spammer",
+    "spammer,moodmaker": "moodmaker_spammer",
+    "leader,informer": "leader_informer",
+    "informer,leader": "leader_informer",
+    "reactor,moodmaker": "reactor_moodmaker",
+    "moodmaker,reactor": "reactor_moodmaker",
+    "informer,leader": "informer_leader",
+    "leader,informer": "informer_leader",
+    "ghosting,lurker": "ghosting_lurker",
+    "lurker,ghosting": "ghosting_lurker",
+    "lurker,moodmaker": "lurker_ghosting",
+    "lurker,leader": "lurker_ghosting",
+    "lurker,reactor": "lurker_ghosting",
+    "lurker,informer": "lurker_ghosting",
+    "lurker,spammer": "lurker_ghosting",
+    "ghosting,moodmaker": "ghosting_lurker",
+    "ghosting,leader": "ghosting_lurker",
+    "ghosting,reactor": "ghosting_lurker",
+    "ghosting,informer": "ghosting_lurker",
+    "ghosting,spammer": "ghosting_lurker",
+    "moodmaker,leader": "moodmaker_spammer",
+    "moodmaker,lurker": "moodmaker_spammer",
+    "moodmaker,ghosting": "moodmaker_spammer",
+    "moodmaker,informer": "moodmaker_spammer",
+    "moodmaker,reactor": "reactor_moodmaker",
+    "spammer,leader": "moodmaker_spammer",
+    "spammer,lurker": "moodmaker_spammer",
+    "spammer,ghosting": "ghosting_lurker",
+    "spammer,informer": "moodmaker_spammer",
+    "spammer,reactor": "reactor_moodmaker",
+    "leader,moodmaker": "leader_informer",
+    "leader,lurker": "leader_informer",
+    "leader,ghosting": "leader_informer",
+    "leader,reactor": "leader_informer",
+    "leader,spammer": "moodmaker_spammer",
+    "informer,moodmaker": "informer_leader",
+    "informer,lurker": "informer_leader",
+    "informer,ghosting": "lurker_ghosting",
+    "informer,reactor": "informer_leader",
+    "informer,spammer": "moodmaker_spammer",
+    "reactor,leader": "reactor_moodmaker",
+    "reactor,lurker": "lurker_ghosting",
+    "reactor,ghosting": "ghosting_lurker",
+    "reactor,informer": "informer_leader",
+    "reactor,spammer": "moodmaker_spammer"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent = m.emoji;
+  document.getElementById('intro-title').textContent = m.title;
+  document.getElementById('intro-sub').textContent   = m.subtitle;
+  document.getElementById('intro-count').textContent = '총 ' + m.questionCount + '문항 · 결과 ' + m.resultCount + '가지';
+  document.getElementById('analyzing-emoji').textContent = m.emoji;
+  applyTheme();
+}
+
+function applyTheme() {
+  // 결과들의 색상 중 첫 번째를 테마 색상으로 사용
+  var keys = Object.keys(DATA.results);
+  var color = DATA.results[keys[0]].color;
+
+  // hex → rgb 변환
+  var r = parseInt(color.slice(1, 3), 16);
+  var g = parseInt(color.slice(3, 5), 16);
+  var b = parseInt(color.slice(5, 7), 16);
+
+  document.documentElement.style.setProperty('--theme', color);
+  document.documentElement.style.setProperty('--theme-dim', 'rgba(' + r + ',' + g + ',' + b + ',0.15)');
+
+  // 인트로 배경에 주제 색상 은은하게 반영
+  document.getElementById('intro').style.background =
+    'radial-gradient(ellipse at 50% -10%, rgba(' + r + ',' + g + ',' + b + ',0.25) 0%, transparent 65%)';
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('progress').style.width = ((currentQ / tot) * 100) + '%';
+  document.getElementById('q-count').textContent  = 'Q' + (currentQ + 1) + ' / ' + tot;
+  document.getElementById('q-emoji').textContent  = q.emoji;
+  document.getElementById('q-text').textContent   = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt.text;
+    btn.onclick = (function(s, b) { return function() { pick(s, b); }; })(opt.scores, btn);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap, btn) {
+  document.querySelectorAll('.option-btn').forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  setTimeout(function() {
+    Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+    currentQ++;
+    if (currentQ < DATA.questions.length) {
+      renderQuestion();
+    } else {
+      showAnalyzing();
+    }
+  }, 280);
+}
+
+function showAnalyzing() {
+  show('analyzing');
+  requestAnimationFrame(function() {
+    document.getElementById('analyzing-fill').style.width = '100%';
+  });
+  setTimeout(showResult, 2500);
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  document.getElementById('result-header').style.background = res.color;
+  document.getElementById('result-badge').textContent = m.resultBadge;
+  document.getElementById('result-emoji').textContent = res.emoji;
+  document.getElementById('result-name').textContent  = res.name;
+  document.getElementById('result-sub').textContent   = res.sub;
+  document.getElementById('result-desc').textContent  = res.desc;
+
+  var traitsEl = document.getElementById('traits');
+  traitsEl.innerHTML = '';
+  res.traits.forEach(function(t) {
+    var div = document.createElement('div');
+    div.className = 'trait';
+    div.innerHTML =
+      '<div class="trait-top">' +
+        '<span class="trait-name">' + t.icon + ' ' + t.name + '</span>' +
+        '<span class="trait-pct">' + t.pct + '%</span>' +
+      '</div>' +
+      '<div class="trait-bar">' +
+        '<div class="trait-fill" style="background:' + res.color + '" data-pct="' + t.pct + '"></div>' +
+      '</div>';
+    traitsEl.appendChild(div);
+  });
+
+  var compatEl = document.getElementById('compat');
+  compatEl.innerHTML =
+    '<div class="compat-card">' +
+      '<div class="compat-label">잘 맞는 유형</div>' +
+      '<div class="compat-name">' + res.good + '</div>' +
+    '</div>' +
+    '<div class="compat-card">' +
+      '<div class="compat-label">안 맞는 유형</div>' +
+      '<div class="compat-name">' + res.bad + '</div>' +
+    '</div>';
+
+  show('result');
+
+  requestAnimationFrame(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(el) {
+      el.style.width = el.getAttribute('data-pct') + '%';
+    });
+  });
+}
+
+function share() {
+  var shareUrl = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: shareUrl });
+  } else {
+    navigator.clipboard.writeText(shareUrl).then(function() { alert('링크가 복사됐어요!'); });
+  }
+}
+
+function retry() { startQuiz(); }
+
+init();
+</script>
+</body>
+</html>
