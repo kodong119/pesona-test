@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>모임 끝나고 나 혼자 카톡방 나가는 타입?</title>
+  <meta property="og:title" content="모임 끝나고 나 혼자 카톡방 나가는 타입?" />
+  <meta property="og:description" content="단톡방 탈출 본능으로 알아보는 당신의 관계 유형 📱" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "모임 끝나고 나 혼자 카톡방 나가는 타입?",
+    "subtitle": "단톡방 탈출 본능으로 알아보는 당신의 관계 유형 📱",
+    "badge": "2026 단톡방 관계 테스트",
+    "emoji": "📱",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/group-chat-exit-type.html",
+    "resultBadge": "YOUR GROUPCHAT PERSONA"
+  },
+
+  "scoreKeys": ["ghost", "loyal", "planner", "vibe", "anxious", "chill", "social"],
+
+  "questions": [
+    {
+      "emoji": "🎉",
+      "text": "모임이 끝났다! 집에 가면서 제일 먼저 드는 생각은?",
+      "options": [
+        { "text": "😮‍💨 아 힘들었다... 이제 혼자 시간이다", "scores": { "ghost": 3, "chill": 1 } },
+        { "text": "💬 오늘 진짜 재밌었다 다음엔 어디 가지?", "scores": { "social": 3, "loyal": 1 } },
+        { "text": "📅 다음 모임은 언제로 잡지?", "scores": { "planner": 3, "loyal": 1 } },
+        { "text": "😰 내가 실수한 거 없나... 되돌아보는 중", "scores": { "anxious": 3, "ghost": 1 } }
+      ]
+    },
+    {
+      "emoji": "📲",
+      "text": "단톡방에 '오늘 즐거웠어요~' 마무리 메시지가 올라왔다. 나는?",
+      "options": [
+        { "text": "👍 이모티콘 하나 누르고 핸드폰 내려놓음", "scores": { "chill": 3, "ghost": 1 } },
+        { "text": "💬 '저도요!! 다음에 또 봐요!!' 바로 답장", "scores": { "social": 3, "loyal": 1 } },
+        { "text": "😶 읽씹... 나중에 답해야지 (안 함)", "scores": { "ghost": 3, "chill": 1 } },
+        { "text": "😬 답장 안 하면 이상해 보일까봐 열심히 리액션", "scores": { "anxious": 3, "social": 1 } }
+      ]
+    },
+    {
+      "emoji": "🚪",
+      "text": "모임 단톡방, 모임 끝난 후 얼마나 유지해?",
+      "options": [
+        { "text": "🏃 모임 끝나자마자 조용히 나감", "scores": { "ghost": 3, "chill": 1 } },
+        { "text": "📅 다음 모임 잡힐 때까지는 눈치껏 있음", "scores": { "planner": 2, "anxious": 2 } },
+        { "text": "♾️ 아 그냥 있음... 나가는 게 더 어색해", "scores": { "loyal": 3, "anxious": 1 } },
+        { "text": "🔕 나가진 않는데 알림은 꺼놓음", "scores": { "chill": 3, "ghost": 1 } }
+      ]
+    },
+    {
+      "emoji": "👀",
+      "text": "내가 카톡방 나간 걸 누군가 알아챘다. 연락이 왔을 때 반응은?",
+      "options": [
+        { "text": "😎 '어 나왔어~ 담에 또 봐!' 쿨하게 대응", "scores": { "chill": 3, "ghost": 1 } },
+        { "text": "😱 심장 쫄깃... 괜히 나갔나 싶음", "scores": { "anxious": 3, "loyal": 1 } },
+        { "text": "🤷 나갔다는 거 들켰네~ 근데 뭐 어때", "scores": { "ghost": 3, "chill": 1 } },
+        { "text": "🙏 미안하다고 사과하고 다시 들어감", "scores": { "loyal": 3, "anxious": 1 } }
+      ]
+    },
+    {
+      "emoji": "🗓️",
+      "text": "다음 모임 날짜 정하는 카톡이 왔을 때 나는?",
+      "options": [
+        { "text": "📅 캘린더 바로 열어서 가능한 날 답장", "scores": { "planner": 3, "social": 1 } },
+        { "text": "😶 일단 읽고 다른 사람 반응 보면서 대기", "scores": { "anxious": 2, "chill": 2 } },
+        { "text": "🎉 '저 다 돼요!!' 가장 먼저 열정적으로 답장", "scores": { "social": 3, "loyal": 1 } },
+        { "text": "🤔 '그때 봐서...' 라고 애매하게 답하고 빠짐", "scores": { "ghost": 3, "chill": 1 } }
+      ]
+    },
+    {
+      "emoji": "💬",
+      "text": "단톡방에서 아무 상관없는 잡담이 계속 올라올 때?",
+      "options": [
+        { "text": "🔕 알림 끄고 내 할 일 함", "scores": { "chill": 3, "ghost": 1 } },
+        { "text": "😂 ㅋㅋㅋ 거리며 같이 신나게 참여", "scores": { "social": 3, "vibe": 1 } },
+        { "text": "😤 이럴 거면 나 좀 빼줘... 속으로만 생각", "scores": { "ghost": 2, "anxious": 2 } },
+        { "text": "🫣 읽는데 참여는 못하고 눈팅만 함", "scores": { "anxious": 3, "vibe": 1 } }
+      ]
+    },
+    {
+      "emoji": "🤝",
+      "text": "모임 사람 중 한 명이랑 따로 친해지고 싶을 때 어떻게 해?",
+      "options": [
+        { "text": "💌 단톡에서 개인 DM으로 먼저 연락함", "scores": { "social": 3, "vibe": 1 } },
+        { "text": "😅 친해지고 싶지만 먼저 연락하기엔 무서움", "scores": { "anxious": 3, "loyal": 1 } },
+        { "text": "🕰️ 다음 모임 때 자연스럽게 친해지는 걸로...", "scores": { "planner": 2, "chill": 2 } },
+        { "text": "🤷 굳이? 모임에서만 봐도 충분해", "scores": { "ghost": 3, "chill": 1 } }
+      ]
+    },
+    {
+      "emoji": "🧠",
+      "text": "모임에서 내 에너지 게이지는?",
+      "options": [
+        { "text": "🔋 모임 끝나면 방전... 혼자 충전이 필요해", "scores": { "ghost": 2, "chill": 2 } },
+        { "text": "⚡ 사람 많을수록 오히려 에너지 충전됨!", "scores": { "social": 3, "vibe": 1 } },
+        { "text": "📊 적당히 즐기고 딱 맞게 끝내는 편", "scores": { "planner": 3, "chill": 1 } },
+        { "text": "😬 즐겁긴 한데 실수 안 했나 계속 신경 쓰임", "scores": { "anxious": 3, "loyal": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "ghost_chill": {
+      "emoji": "👻",
+      "name": "조용한 퇴장러",
+      "sub": "Silent Exit Ghost",
+      "color": "#6c63ff",
+      "desc": "모임은 즐기지만 끝나면 미련 없이 사라지는 당신. 단톡방 나가는 게 숨 쉬는 것만큼 자연스럽고, 누가 뭐라든 쿨하게 넘깁니다. 관계는 소중하지만 디지털 공간까지 끌고 가긴 싫은 현실주의 인간이에요.",
+      "traits": [
+        { "icon": "👻", "name": "단톡방 탈출력", "pct": 95 },
+        { "icon": "😎", "name": "쿨함", "pct": 90 },
+        { "icon": "🔋", "name": "혼자 충전력", "pct": 88 },
+        { "icon": "💬", "name": "답장 성실도", "pct": 22 }
+      ],
+      "good": "계획형 모임러",
+      "bad": "눈치 만렙러"
+    },
+    "social_loyal": {
+      "emoji": "🎊",
+      "name": "단톡방 터줏대감",
+      "sub": "Groupchat Loyalist",
+      "color": "#ff6b9d",
+      "desc": "단톡방 나가는 건 생각도 못 해봤어요, 진심으로. 모임이 끝나도 대화가 끊이질 않고 다음 약속까지 직접 잡아주는 모임의 심장이에요. 당신이 없으면 그 카톡방은 사실상 폐허입니다.",
+      "traits": [
+        { "icon": "💬", "name": "사교력", "pct": 95 },
+        { "icon": "❤️", "name": "충성도", "pct": 92 },
+        { "icon": "🎉", "name": "분위기 메이킹", "pct": 88 },
+        { "icon": "🔕", "name": "혼자 있기", "pct": 28 }
+      ],
+      "good": "분위기 바이브러",
+      "bad": "조용한 퇴장러"
+    },
+    "planner_social": {
+      "emoji": "📅",
+      "name": "계획형 모임러",
+      "sub": "Meeting Planner Pro",
+      "color": "#00d4aa",
+      "desc": "다음 모임 날짜는 이미 머릿속에 있고, 장소도 세 군데 후보가 준비돼 있어요. 단톡방은 다음 약속이 확정될 때까지 나가지 않는 전략가 타입. 사람이 좋아서가 아니라 모임 자체가 좋은 거예요 (사람도 물론 좋음).",
+      "traits": [
+        { "icon": "📅", "name": "계획력", "pct": 95 },
+        { "icon": "🗺️", "name": "장소 섭외력", "pct": 88 },
+        { "icon": "⏰", "name": "일정 관리", "pct": 85 },
+        { "icon": "🌀", "name": "즉흥력", "pct": 30 }
+      ],
+      "good": "단톡방 터줏대감",
+      "bad": "조용한 퇴장러"
+    },
+    "anxious_loyal": {
+      "emoji": "😬",
+      "name": "눈치 만렙러",
+      "sub": "Anxiety Overthinker",
+      "color": "#ffd166",
+      "desc": "나가고 싶은데 눈치 보여서 못 나가고, 있자니 알림이 스트레스. 모임에서 실수한 거 없나 집에 가면서 세 번은 되새기는 타입이에요. 근데 그 배려심 때문에 모두가 당신을 좋아한다는 거, 알고 있죠?",
+      "traits": [
+        { "icon": "👀", "name": "눈치력", "pct": 95 },
+        { "icon": "💭", "name": "생각 많음", "pct": 92 },
+        { "icon": "🤝", "name": "배려심", "pct": 85 },
+        { "icon": "😎", "name": "쿨함", "pct": 20 }
+      ],
+      "good": "단톡방 터줏대감",
+      "bad": "조용한 퇴장러"
+    },
+    "vibe_social": {
+      "emoji": "✨",
+      "name": "분위기 바이브러",
+      "sub": "Vibe Creator",
+      "color": "#ff9e7c",
+      "desc": "모임 분위기를 주도하는 건 항상 당신이에요. 단톡방에서도 짤 투하, 밈 공유로 대화를 살려내는 에너자이저. 모임이 끝나도 카톡방에서 여운을 즐기는 찐 소셜 동물입니다.",
+      "traits": [
+        { "icon": "✨", "name": "바이브력", "pct": 95 },
+        { "icon": "😂", "name": "유머 감각", "pct": 90 },
+        { "icon": "⚡", "name": "에너지", "pct": 92 },
+        { "icon": "🧘", "name": "차분함", "pct": 25 }
+      ],
+      "good": "단톡방 터줏대감",
+      "bad": "조용한 퇴장러"
+    },
+    "chill_ghost": {
+      "emoji": "🔕",
+      "name": "알림 차단 생존러",
+      "sub": "Notification Blocker",
+      "color": "#a8dadc",
+      "desc": "나가진 않지만 사실상 유령 상태. 알림은 꺼져 있고, 읽어도 답장은 나중에, 나중에는 안 함. 싫어서가 아니라 그냥 내 페이스가 있는 거예요. 연락 안 된다고 사이 나빠진 거 절대 아님.",
+      "traits": [
+        { "icon": "🔕", "name": "알림 차단력", "pct": 95 },
+        { "icon": "😴", "name": "느긋함", "pct": 88 },
+        { "icon": "🧘", "name": "내 페이스", "pct": 90 },
+        { "icon": "📲", "name": "답장 속도", "pct": 23 }
+      ],
+      "good": "계획형 모임러",
+      "bad": "눈치 만렙러"
+    }
+  },
+
+  "combos": {
+    "ghost,chill": "ghost_chill",
+    "chill,ghost": "ghost_chill",
+    "social,loyal": "social_loyal",
+    "loyal,social": "social_loyal",
+    "planner,social": "planner_social",
+    "social,planner": "planner_social",
+    "anxious,loyal": "anxious_loyal",
+    "loyal,anxious": "anxious_loyal",
+    "vibe,social": "vibe_social",
+    "social,vibe": "vibe_social",
+    "chill,loyal": "chill_ghost",
+    "loyal,chill": "chill_ghost",
+    "ghost,loyal": "ghost_chill",
+    "loyal,ghost": "ghost_chill",
+    "ghost,social": "ghost_chill",
+    "social,ghost": "ghost_chill",
+    "ghost,planner": "ghost_chill",
+    "planner,ghost": "ghost_chill",
+    "ghost,vibe": "ghost_chill",
+    "vibe,ghost": "ghost_chill",
+    "ghost,anxious": "anxious_loyal",
+    "anxious,ghost": "anxious_loyal",
+    "chill,social": "chill_ghost",
+    "social,chill": "chill_ghost",
+    "chill,planner": "chill_ghost",
+    "planner,chill": "chill_ghost",
+    "chill,vibe": "vibe_social",
+    "vibe,chill": "vibe_social",
+    "chill,anxious": "chill_ghost",
+    "anxious,chill": "chill_ghost",
+    "social,anxious": "anxious_loyal",
+    "anxious,social": "anxious_loyal",
+    "planner,loyal": "planner_social",
+    "loyal,planner": "planner_social",
+    "planner,vibe": "planner_social",
+    "vibe,planner": "planner_social",
+    "planner,anxious": "anxious_loyal",
+    "anxious,planner": "anxious_loyal",
+    "vibe,loyal": "vibe_social",
+    "loyal,vibe": "vibe_social",
+    "vibe,anxious": "anxious_loyal",
+    "anxious,vibe": "anxious_loyal"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
