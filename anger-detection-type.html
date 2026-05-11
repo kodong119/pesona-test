@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>누군가 나한테 화났을 때 나는 어떻게 눈치채는 타입?</title>
+  <meta property="og:title" content="누군가 나한테 화났을 때 나는 어떻게 눈치채는 타입?" />
+  <meta property="og:description" content="당신의 눈치 감지 스타일은? 👀" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "누군가 나한테 화났을 때 나는 어떻게 눈치채는 타입?",
+    "subtitle": "당신의 눈치 감지 스타일은? 👀",
+    "badge": "2026 눈치력 유형 테스트",
+    "emoji": "👀",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/anger-detection-type.html",
+    "resultBadge": "YOUR SENSE PERSONA"
+  },
+
+  "scoreKeys": ["intuitive", "logical", "verbal", "visual", "avoidant", "empathic", "direct"],
+
+  "questions": [
+    {
+      "emoji": "📱",
+      "text": "카톡 답장이 평소보다 늦게 오면?",
+      "options": [
+        { "text": "🔍 읽씹인지 아닌지 쌍방울 눌러서 확인", "scores": { "logical": 3, "visual": 1 } },
+        { "text": "😶 어... 뭔가 이상한데? 촉이 옴", "scores": { "intuitive": 3, "empathic": 1 } },
+        { "text": "🙈 바쁜가보지 뭐~ 일단 기다림", "scores": { "avoidant": 3, "logical": 1 } },
+        { "text": "📞 바로 전화해서 무슨 일인지 물어봄", "scores": { "direct": 3, "verbal": 1 } }
+      ]
+    },
+    {
+      "emoji": "💬",
+      "text": "상대방 말투가 갑자기 달라졌다면?",
+      "options": [
+        { "text": "🎯 '어? 말이 짧아졌다' 즉시 감지", "scores": { "verbal": 3, "logical": 1 } },
+        { "text": "💫 말하기 전에 이미 느낌이 왔었음", "scores": { "intuitive": 3, "empathic": 1 } },
+        { "text": "😅 솔직히 나중에 누군가한테 들음", "scores": { "avoidant": 3, "visual": 1 } },
+        { "text": "🗣️ '나한테 뭔가 있어?' 바로 직구", "scores": { "direct": 3, "verbal": 1 } }
+      ]
+    },
+    {
+      "emoji": "👁️",
+      "text": "친구 얼굴 표정을 보고 뭔가 이상함을 눈치챘을 때, 어떻게 행동해?",
+      "options": [
+        { "text": "😐 표정만 보고 '아 화났구나' 바로 판독", "scores": { "visual": 3, "intuitive": 1 } },
+        { "text": "🤔 상황을 다시 떠올리며 내가 뭘 잘못했나 분석", "scores": { "logical": 3, "empathic": 1 } },
+        { "text": "🥺 괜찮냐고 조심스럽게 먼저 물어봄", "scores": { "empathic": 3, "verbal": 1 } },
+        { "text": "🚶 일단 내가 먼저 자리 피함", "scores": { "avoidant": 3, "visual": 1 } }
+      ]
+    },
+    {
+      "emoji": "🧊",
+      "text": "단체 카톡방에서 나만 빠지거나 분위기가 싸해지면?",
+      "options": [
+        { "text": "📊 언제부터 이상했나 대화 내역 복기", "scores": { "logical": 3, "visual": 1 } },
+        { "text": "💀 이미 직전에 불길한 예감이 있었음", "scores": { "intuitive": 3, "empathic": 1 } },
+        { "text": "🙉 알고 싶지 않아서 그냥 무시", "scores": { "avoidant": 3, "logical": 1 } },
+        { "text": "🔊 '무슨 일임? 나 뭐 잘못함?' 바로 물어봄", "scores": { "direct": 3, "verbal": 1 } }
+      ]
+    },
+    {
+      "emoji": "🤝",
+      "text": "오랜만에 만난 친구가 평소보다 조용하면?",
+      "options": [
+        { "text": "🪄 말 안 해도 분위기로 바로 캐치", "scores": { "intuitive": 3, "empathic": 1 } },
+        { "text": "💬 대화하면서 어디서 어긋났는지 파악", "scores": { "verbal": 3, "logical": 1 } },
+        { "text": "👀 눈빛, 자세, 행동 하나하나 관찰", "scores": { "visual": 3, "intuitive": 1 } },
+        { "text": "😶 피곤한가보다~ 딱히 신경 안 씀", "scores": { "avoidant": 3, "direct": 1 } }
+      ]
+    },
+    {
+      "emoji": "😤",
+      "text": "누군가 나한테 화났다는 걸 깨달은 순간, 첫 반응은?",
+      "options": [
+        { "text": "💭 '내가 언제 뭘 했지?' 원인부터 분석", "scores": { "logical": 3, "empathic": 1 } },
+        { "text": "🫂 일단 '내가 뭔가 잘못한 것 같아, 미안해' 먼저", "scores": { "empathic": 3, "direct": 1 } },
+        { "text": "🔕 시간이 지나면 풀리겠지... 조용히 기다림", "scores": { "avoidant": 3, "intuitive": 1 } },
+        { "text": "📣 바로 불러서 '우리 얘기 좀 하자' 제안", "scores": { "direct": 3, "verbal": 1 } }
+      ]
+    },
+    {
+      "emoji": "🎭",
+      "text": "상대방이 '아니야, 괜찮아'라고 했는데 뭔가 이상할 때?",
+      "options": [
+        { "text": "🧠 목소리 톤이랑 말투로 거짓말 탐지 완료", "scores": { "verbal": 3, "logical": 1 } },
+        { "text": "✨ 괜찮다고 하지만 내 직감이 아니라고 함", "scores": { "intuitive": 3, "empathic": 1 } },
+        { "text": "🙆 괜찮다니까 괜찮겠지~ 믿어버림", "scores": { "avoidant": 3, "logical": 1 } },
+        { "text": "🫦 '진짜야? 솔직히 말해줘' 재확인 요청", "scores": { "direct": 3, "empathic": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌀",
+      "text": "나한테 화난 사람을 가장 먼저 눈치채는 경로는?",
+      "options": [
+        { "text": "👁️ 표정·눈빛·몸짓 등 비언어 신호", "scores": { "visual": 3, "intuitive": 1 } },
+        { "text": "🌊 그냥 느낌, 이유 설명 불가", "scores": { "intuitive": 3, "empathic": 1 } },
+        { "text": "💬 말투, 단어 선택, 반응 속도 변화", "scores": { "verbal": 3, "logical": 1 } },
+        { "text": "📰 솔직히 제3자한테 전해 들음", "scores": { "avoidant": 3, "direct": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "intuitive_empathic": {
+      "emoji": "🔮",
+      "name": "직감 레이더형",
+      "sub": "Gut Feeling Detector",
+      "color": "#c77dff",
+      "desc": "말하기도 전에 이미 다 느끼는 타입. 논리적 근거는 없는데 촉이 먼저 오고, 나중에 보면 다 맞음. 감정에 굉장히 민감하게 반응하는 안테나 장착 인간이에요.",
+      "traits": [
+        { "icon": "🔮", "name": "직감력", "pct": 95 },
+        { "icon": "🌊", "name": "감수성", "pct": 90 },
+        { "icon": "🫂", "name": "공감력", "pct": 85 },
+        { "icon": "📊", "name": "분석력", "pct": 35 }
+      ],
+      "good": "공감 탐정형",
+      "bad": "쿨내진동형"
+    },
+    "logical_visual": {
+      "emoji": "🕵️",
+      "name": "증거 수집형",
+      "sub": "Evidence Collector",
+      "color": "#00d4aa",
+      "desc": "카톡 읽씹 시간, 말투 변화, 눈빛까지 다 데이터로 처리하는 타입. 감이 아니라 팩트로 '화났다'를 입증해냄. 틀리는 경우가 거의 없는 분석 끝판왕이에요.",
+      "traits": [
+        { "icon": "📊", "name": "분석력", "pct": 95 },
+        { "icon": "👁️", "name": "관찰력", "pct": 92 },
+        { "icon": "🧠", "name": "논리력", "pct": 88 },
+        { "icon": "💫", "name": "직감력", "pct": 28 }
+      ],
+      "good": "직감 레이더형",
+      "bad": "쿨내진동형"
+    },
+    "verbal_direct": {
+      "emoji": "🎙️",
+      "name": "말투 감지형",
+      "sub": "Tone & Word Scanner",
+      "color": "#ff6b9d",
+      "desc": "한 마디만 들어도 감정 상태 파악 완료. '어' 하나, '응' 하나에도 뉘앙스를 다 읽어내는 언어의 달인. 그냥 대놓고 물어보는 것도 서슴없어서 빠르게 해결하는 편이에요.",
+      "traits": [
+        { "icon": "🎙️", "name": "언어감지", "pct": 95 },
+        { "icon": "🔊", "name": "직접소통", "pct": 88 },
+        { "icon": "💬", "name": "대화력", "pct": 85 },
+        { "icon": "🙈", "name": "회피력", "pct": 22 }
+      ],
+      "good": "증거 수집형",
+      "bad": "쿨내진동형"
+    },
+    "empathic_visual": {
+      "emoji": "🫂",
+      "name": "공감 탐정형",
+      "sub": "Empathy Detective",
+      "color": "#ffd166",
+      "desc": "표정만 봐도 마음이 느껴지고, 괜찮다고 해도 눈빛으로 다 들켜버리는 거 앎. 상대방 감정에 나도 같이 흔들리는 감정 이입 능력자예요. 먼저 다가가 '나 뭔가 잘못했어?' 하는 따뜻한 사람.",
+      "traits": [
+        { "icon": "🫂", "name": "공감력", "pct": 95 },
+        { "icon": "👁️", "name": "표정감지", "pct": 90 },
+        { "icon": "💛", "name": "따뜻함", "pct": 88 },
+        { "icon": "🧊", "name": "냉정함", "pct": 30 }
+      ],
+      "good": "직감 레이더형",
+      "bad": "쿨내진동형"
+    },
+    "avoidant_logical": {
+      "emoji": "🙈",
+      "name": "쿨내진동형",
+      "sub": "Blissful Avoider",
+      "color": "#ff9e7c",
+      "desc": "화난 거 눈치채도 모른 척, 모르면 더 좋고. '시간이 해결해줄 거야'가 인생 모토인 타입. 갈등 상황을 피하려는 본능이 강해서 눈치채도 액션을 안 취함. 사실 알면서 모른 척하는 거 맞아요.",
+      "traits": [
+        { "icon": "🙈", "name": "회피력", "pct": 95 },
+        { "icon": "🧊", "name": "쿨함", "pct": 85 },
+        { "icon": "⏳", "name": "기다림", "pct": 80 },
+        { "icon": "🔥", "name": "대면용기", "pct": 25 }
+      ],
+      "good": "증거 수집형",
+      "bad": "말투 감지형"
+    },
+    "direct_verbal": {
+      "emoji": "📣",
+      "name": "즉각해결형",
+      "sub": "Straight Solver",
+      "color": "#7c5cfc",
+      "desc": "뭔가 이상하면 바로 물어보고 바로 해결하는 타입. '눈치 게임' 같은 거 극혐하고 직접 확인이 제일 빠르다고 생각함. 갈등을 오래 끌지 않아서 주변에서 속 시원하다는 말 많이 들어요.",
+      "traits": [
+        { "icon": "📣", "name": "직접성", "pct": 95 },
+        { "icon": "⚡", "name": "해결속도", "pct": 92 },
+        { "icon": "💬", "name": "소통력", "pct": 88 },
+        { "icon": "🕵️", "name": "관찰력", "pct": 32 }
+      ],
+      "good": "말투 감지형",
+      "bad": "쿨내진동형"
+    }
+  },
+
+  "combos": {
+    "intuitive,empathic": "intuitive_empathic",
+    "empathic,intuitive": "intuitive_empathic",
+    "logical,visual": "logical_visual",
+    "visual,logical": "logical_visual",
+    "verbal,direct": "verbal_direct",
+    "direct,verbal": "verbal_direct",
+    "empathic,visual": "empathic_visual",
+    "visual,empathic": "empathic_visual",
+    "avoidant,logical": "avoidant_logical",
+    "logical,avoidant": "avoidant_logical",
+    "direct,verbal": "direct_verbal",
+    "verbal,direct": "verbal_direct",
+    "intuitive,logical": "intuitive_empathic",
+    "logical,intuitive": "logical_visual",
+    "intuitive,verbal": "intuitive_empathic",
+    "verbal,intuitive": "verbal_direct",
+    "intuitive,visual": "intuitive_empathic",
+    "visual,intuitive": "empathic_visual",
+    "intuitive,avoidant": "avoidant_logical",
+    "avoidant,intuitive": "avoidant_logical",
+    "intuitive,direct": "intuitive_empathic",
+    "direct,intuitive": "direct_verbal",
+    "logical,verbal": "logical_visual",
+    "verbal,logical": "verbal_direct",
+    "logical,empathic": "logical_visual",
+    "empathic,logical": "empathic_visual",
+    "logical,direct": "logical_visual",
+    "direct,logical": "direct_verbal",
+    "visual,verbal": "logical_visual",
+    "verbal,visual": "verbal_direct",
+    "visual,avoidant": "avoidant_logical",
+    "avoidant,visual": "avoidant_logical",
+    "visual,direct": "empathic_visual",
+    "direct,visual": "direct_verbal",
+    "empathic,verbal": "empathic_visual",
+    "verbal,empathic": "verbal_direct",
+    "empathic,avoidant": "avoidant_logical",
+    "avoidant,empathic": "avoidant_logical",
+    "empathic,direct": "empathic_visual",
+    "direct,empathic": "direct_verbal",
+    "avoidant,direct": "avoidant_logical",
+    "direct,avoidant": "direct_verbal"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
