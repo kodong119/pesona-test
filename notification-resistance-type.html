@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>알림 못 본 척 버티기 테스트</title>
+  <meta property="og:title" content="알림 못 본 척 버티기 테스트" />
+  <meta property="og:description" content="📳 당신은 알림 앞에서 얼마나 강한가?" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "알림 못 본 척 버티기 테스트",
+    "subtitle": "📳 당신은 알림 앞에서 얼마나 강한가?",
+    "badge": "2026 알림 내성 테스트",
+    "emoji": "🔔",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/notification-resistance-type.html",
+    "resultBadge": "YOUR NOTIFICATION TYPE"
+  },
+
+  "scoreKeys": ["ignore", "anxious", "selective", "social", "chill", "impulsive", "disciplined"],
+
+  "questions": [
+    {
+      "emoji": "🔔",
+      "text": "카톡 알림이 왔다. 지금 당신은?",
+      "options": [
+        { "text": "👀 화면 안 보는 척 하면서 눈동자가 슬쩍 감", "scores": { "anxious": 3, "impulsive": 1 } },
+        { "text": "🧘 진짜로 신경 안 씀. 나중에 보면 되지", "scores": { "chill": 3, "ignore": 1 } },
+        { "text": "⚡ 0.3초 만에 반사적으로 잠금 해제", "scores": { "impulsive": 3, "social": 1 } },
+        { "text": "🔍 발신자 확인 후 중요하면 봄", "scores": { "selective": 3, "disciplined": 1 } }
+      ]
+    },
+    {
+      "emoji": "😤",
+      "text": "회의 중에 진동이 세 번 연속으로 울렸다!",
+      "options": [
+        { "text": "😨 속으로 '제발 급한 거 아니길' 빌면서 버팀", "scores": { "anxious": 3, "disciplined": 1 } },
+        { "text": "😎 어차피 회의 끝나면 보면 됨. 태연", "scores": { "chill": 3, "ignore": 1 } },
+        { "text": "📱 슬쩍 테이블 밑에서 확인함 (들킬 것 같아서 조마조마)", "scores": { "impulsive": 3, "anxious": 1 } },
+        { "text": "🚫 회의 전에 아예 무음 해놨음. 문제 없음", "scores": { "disciplined": 3, "selective": 1 } }
+      ]
+    },
+    {
+      "emoji": "💤",
+      "text": "잠들기 전 침대에 누웠는데 알림이 왔다면?",
+      "options": [
+        { "text": "🌙 내일 아침에 보겠다고 마음먹고 폰 뒤집어 놓음", "scores": { "disciplined": 3, "chill": 1 } },
+        { "text": "😵 안 보면 잠 못 잘 것 같아서 결국 확인", "scores": { "anxious": 3, "impulsive": 1 } },
+        { "text": "😴 이미 잠든 척하다가 30분 후에 슬쩍 봄", "scores": { "ignore": 2, "anxious": 2 } },
+        { "text": "🤙 누구냐에 따라 다름. 베프면 바로 답장", "scores": { "selective": 3, "social": 1 } }
+      ]
+    },
+    {
+      "emoji": "📲",
+      "text": "인스타 좋아요·댓글 알림, 어떻게 처리해?",
+      "options": [
+        { "text": "🗑️ 알림 자체를 꺼놨음. 필요할 때 직접 들어감", "scores": { "disciplined": 3, "ignore": 1 } },
+        { "text": "❤️ 올 때마다 바로 확인. 누가 눌렀는지 궁금해", "scores": { "social": 3, "impulsive": 1 } },
+        { "text": "😏 모아서 한 번에 봄. 나름 효율적이잖아", "scores": { "selective": 3, "chill": 1 } },
+        { "text": "🫣 안 보려고 하는데 숫자가 쌓이면 결국 클릭", "scores": { "anxious": 2, "impulsive": 2 } }
+      ]
+    },
+    {
+      "emoji": "🎮",
+      "text": "게임·유튜브 정신없이 보는 중 카톡 와서 팝업 떴다면?",
+      "options": [
+        { "text": "🎯 집중 모드라 무조건 무시. 나중에 확인", "scores": { "ignore": 3, "disciplined": 1 } },
+        { "text": "📖 내용 미리보기 정도는 확인함. 읽씹 가능", "scores": { "selective": 2, "chill": 2 } },
+        { "text": "⏸️ 잠깐 멈추고 답장까지 보내버림", "scores": { "social": 3, "impulsive": 1 } },
+        { "text": "😩 신경 쓰여서 결국 게임 흐름 다 끊김", "scores": { "anxious": 3, "impulsive": 1 } }
+      ]
+    },
+    {
+      "emoji": "🏢",
+      "text": "단톡방에 알림이 37개 쌓였다. 당신은?",
+      "options": [
+        { "text": "🧹 읽음 처리만 하고 내용은 안 봄", "scores": { "ignore": 3, "chill": 1 } },
+        { "text": "📜 처음부터 끝까지 다 읽음. 흐름 파악 필수", "scores": { "anxious": 2, "social": 2 } },
+        { "text": "🔚 마지막 몇 개만 보고 상황 파악", "scores": { "selective": 3, "disciplined": 1 } },
+        { "text": "🔕 단톡방 알림은 아예 꺼놨음. 나 빼고 해", "scores": { "disciplined": 2, "ignore": 2 } }
+      ]
+    },
+    {
+      "emoji": "💌",
+      "text": "좋아하는 사람한테서 알림이 왔을 때 반응은?",
+      "options": [
+        { "text": "💨 쿨한 척 10분 있다가 답장 (내심 설레지만)", "scores": { "selective": 2, "ignore": 2 } },
+        { "text": "🏃 바로 답장! 기다리게 하기 싫음", "scores": { "social": 3, "impulsive": 1 } },
+        { "text": "🎭 읽고 신중하게 답장 내용 구상 후 전송", "scores": { "disciplined": 3, "selective": 1 } },
+        { "text": "😳 심장 쿵 - 근데 답장 뭐라 해야 할지 몰라서 1시간 고민", "scores": { "anxious": 3, "social": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌊",
+      "text": "휴가 중 업무 메일 알림이 왔다면?",
+      "options": [
+        { "text": "🏖️ 못 본 척. 휴가는 휴가다. 완전 차단", "scores": { "ignore": 3, "chill": 1 } },
+        { "text": "📨 제목만 보고 급하면 처리, 아니면 월요일에", "scores": { "selective": 3, "disciplined": 1 } },
+        { "text": "😰 혹시 큰일 난 거 아닐까 싶어서 결국 다 읽음", "scores": { "anxious": 3, "impulsive": 1 } },
+        { "text": "💻 어차피 신경 쓰여서 노트북 킴. 반나절 날림", "scores": { "anxious": 2, "impulsive": 2 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "ignore_chill": {
+      "emoji": "😶",
+      "name": "알림 무법자",
+      "sub": "Notification Ghost",
+      "color": "#4a4e69",
+      "desc": "알림? 그게 뭔데 먹는 거야? 당신에게 알림은 존재하지 않는 것과 마찬가지예요. 읽씹·무시는 기본이고, 며칠 뒤에 '어? 이런 게 왔었네' 하는 타입. 연락 안 된다고 서운해 하는 사람들이 주변에 많을 수도 있어요.",
+      "traits": [
+        { "icon": "🧊", "name": "무감각", "pct": 95 },
+        { "icon": "😎", "name": "쿨함", "pct": 90 },
+        { "icon": "🧘", "name": "평온함", "pct": 85 },
+        { "icon": "📱", "name": "알림 반응", "pct": 20 }
+      ],
+      "good": "디지털 선비",
+      "bad": "알림 과몰입러"
+    },
+    "anxious_impulsive": {
+      "emoji": "😱",
+      "name": "알림 과몰입러",
+      "sub": "Notification Addict",
+      "color": "#ef233c",
+      "desc": "알림 소리만 나도 심장이 쿵! 안 보면 불안하고, 보면 답장 안 할 수가 없어요. 폰 화면이 꺼져있어도 '혹시 왔나?' 하고 켜보는 당신은 알림 중독 의심 단계예요. 오늘 하루 알림 몇 번 확인했는지 세어봤어요?",
+      "traits": [
+        { "icon": "😰", "name": "불안도", "pct": 95 },
+        { "icon": "⚡", "name": "반응속도", "pct": 92 },
+        { "icon": "📲", "name": "확인 빈도", "pct": 90 },
+        { "icon": "🧘", "name": "평온함", "pct": 22 }
+      ],
+      "good": "눈치 보는 선택러",
+      "bad": "알림 무법자"
+    },
+    "selective_disciplined": {
+      "emoji": "🎯",
+      "name": "디지털 선비",
+      "sub": "Digital Minimalist",
+      "color": "#2d6a4f",
+      "desc": "알림을 다스리는 자, 인생을 다스린다. 필요한 알림만 허용하고, 볼 때와 안 볼 때를 스스로 결정하는 당신은 디지털 생활의 고수예요. 충동적으로 폰을 켜는 일 없이 루틴대로 움직이는 갓생 실천러!",
+      "traits": [
+        { "icon": "🎯", "name": "자기통제", "pct": 95 },
+        { "icon": "🧠", "name": "선택력", "pct": 90 },
+        { "icon": "⚙️", "name": "루틴력", "pct": 88 },
+        { "icon": "🤳", "name": "즉흥성", "pct": 25 }
+      ],
+      "good": "알림 무법자",
+      "bad": "알림 과몰입러"
+    },
+    "social_impulsive": {
+      "emoji": "🤳",
+      "name": "알림 소통왕",
+      "sub": "Social Notification King",
+      "color": "#f77f00",
+      "desc": "알림 = 누군가 나를 찾는다 = 당연히 바로 확인! 연락이 오면 바로 답장하고, 단톡방 흐름도 다 파악하는 관계 만렙 캐릭터예요. 주변에서 연락 잘 된다는 소리 많이 듣죠? 대신 혼자만의 시간이 부족할 수도 있어요.",
+      "traits": [
+        { "icon": "💬", "name": "소통력", "pct": 95 },
+        { "icon": "⚡", "name": "반응속도", "pct": 90 },
+        { "icon": "❤️", "name": "친화력", "pct": 88 },
+        { "icon": "🔕", "name": "거절력", "pct": 28 }
+      ],
+      "good": "눈치 보는 선택러",
+      "bad": "디지털 선비"
+    },
+    "anxious_disciplined": {
+      "emoji": "🫠",
+      "name": "눈치 보는 선택러",
+      "sub": "Anxious Selective Checker",
+      "color": "#7209b7",
+      "desc": "보고 싶은데 참고, 참다가 결국 보는 타입. 발신자나 내용에 따라 반응 속도가 천차만별이에요. 중요한 사람 알림엔 불안하고, 단체 알림엔 의외로 무덤덤한 양면적인 매력의 소유자예요.",
+      "traits": [
+        { "icon": "🤔", "name": "눈치력", "pct": 92 },
+        { "icon": "😬", "name": "불안도", "pct": 75 },
+        { "icon": "🎭", "name": "상황 판단", "pct": 85 },
+        { "icon": "😎", "name": "쿨함", "pct": 40 }
+      ],
+      "good": "알림 소통왕",
+      "bad": "알림 무법자"
+    },
+    "chill_ignore": {
+      "emoji": "🌿",
+      "name": "알림 자연인",
+      "sub": "Off-Grid Vibe Master",
+      "color": "#52b788",
+      "desc": "알림 없이도 세상은 잘 돌아간다는 걸 몸소 실천하는 사람. 폰을 멀리 두고도 불안하지 않고, 연락이 늦어도 죄책감 없는 진정한 오프그리드 감성 소유자예요. 디지털 디톡스 챌린지 1등 후보!",
+      "traits": [
+        { "icon": "🌿", "name": "여유", "pct": 95 },
+        { "icon": "🧘", "name": "평온함", "pct": 90 },
+        { "icon": "🔋", "name": "에너지 절약", "pct": 85 },
+        { "icon": "📳", "name": "알림 민감도", "pct": 20 }
+      ],
+      "good": "디지털 선비",
+      "bad": "알림 과몰입러"
+    }
+  },
+
+  "combos": {
+    "ignore,chill": "ignore_chill",
+    "chill,ignore": "chill_ignore",
+    "anxious,impulsive": "anxious_impulsive",
+    "impulsive,anxious": "anxious_impulsive",
+    "selective,disciplined": "selective_disciplined",
+    "disciplined,selective": "selective_disciplined",
+    "social,impulsive": "social_impulsive",
+    "impulsive,social": "social_impulsive",
+    "anxious,disciplined": "anxious_disciplined",
+    "disciplined,anxious": "anxious_disciplined",
+    "chill,selective": "chill_ignore",
+    "selective,chill": "chill_ignore",
+    "ignore,disciplined": "ignore_chill",
+    "disciplined,ignore": "selective_disciplined",
+    "anxious,social": "anxious_impulsive",
+    "social,anxious": "anxious_disciplined",
+    "impulsive,disciplined": "social_impulsive",
+    "disciplined,impulsive": "selective_disciplined",
+    "ignore,anxious": "anxious_disciplined",
+    "anxious,ignore": "anxious_impulsive",
+    "ignore,selective": "ignore_chill",
+    "selective,ignore": "selective_disciplined",
+    "ignore,social": "social_impulsive",
+    "social,ignore": "chill_ignore",
+    "ignore,impulsive": "anxious_impulsive",
+    "impulsive,ignore": "social_impulsive",
+    "chill,anxious": "anxious_disciplined",
+    "anxious,chill": "anxious_disciplined",
+    "chill,impulsive": "social_impulsive",
+    "impulsive,chill": "chill_ignore",
+    "chill,social": "social_impulsive",
+    "social,chill": "chill_ignore",
+    "chill,disciplined": "selective_disciplined",
+    "disciplined,chill": "selective_disciplined",
+    "selective,anxious": "anxious_disciplined",
+    "anxious,selective": "anxious_disciplined",
+    "selective,social": "social_impulsive",
+    "social,selective": "social_impulsive",
+    "selective,impulsive": "social_impulsive",
+    "impulsive,selective": "social_impulsive",
+    "disciplined,social": "selective_disciplined",
+    "social,disciplined": "anxious_disciplined"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
