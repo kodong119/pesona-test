@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>나는 단체 사진 찍을 때 어떤 타입?</title>
+  <meta property="og:title" content="나는 단체 사진 찍을 때 어떤 타입?" />
+  <meta property="og:description" content="셔터 한 번에 드러나는 당신의 진짜 모습 📸" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "나는 단체 사진 찍을 때 어떤 타입?",
+    "subtitle": "셔터 한 번에 드러나는 당신의 진짜 모습 📸",
+    "badge": "2026 단체 사진 유형 테스트",
+    "emoji": "📸",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/group-photo-type.html",
+    "resultBadge": "YOUR GROUP PHOTO PERSONA"
+  },
+
+  "scoreKeys": ["director", "poser", "natural", "shy", "clown", "observer"],
+
+  "questions": [
+    {
+      "emoji": "📢",
+      "text": "단체 사진 찍기 전, 당신의 행동은?",
+      "options": [
+        { "text": "🎬 '야 여기 서! 저기 서!' 자리 배치 시작", "scores": { "director": 3, "clown": 1 } },
+        { "text": "💄 얼른 거울이나 폰 카메라로 셀프 체크", "scores": { "poser": 3, "natural": 1 } },
+        { "text": "😊 그냥 불리는 자리에 조용히 서 있음", "scores": { "natural": 3, "shy": 1 } },
+        { "text": "🫣 뒤로 슬금슬금 도망가는 중...", "scores": { "shy": 3, "observer": 1 } }
+      ]
+    },
+    {
+      "emoji": "📍",
+      "text": "단체 사진에서 주로 서는 위치는?",
+      "options": [
+        { "text": "🏆 무조건 정중앙! 주인공 자리", "scores": { "poser": 3, "director": 1 } },
+        { "text": "🎭 맨 앞에서 포즈 다양하게 시도", "scores": { "clown": 3, "natural": 1 } },
+        { "text": "📐 자연스럽게 배치된 자리 어디든", "scores": { "natural": 3, "observer": 1 } },
+        { "text": "🙈 맨 뒤! 가능하면 얼굴 반만 나오게", "scores": { "shy": 3, "observer": 1 } }
+      ]
+    },
+    {
+      "emoji": "😆",
+      "text": "사진 찍기 직전 포즈는?",
+      "options": [
+        { "text": "✌️ 브이 포즈는 기본 중의 기본이지", "scores": { "natural": 3, "poser": 1 } },
+        { "text": "🤩 매번 다른 컨셉 포즈 시도 중", "scores": { "clown": 2, "poser": 2 } },
+        { "text": "😐 그냥 서 있음... 포즈가 뭔데", "scores": { "shy": 2, "observer": 2 } },
+        { "text": "📸 각도 맞게 턱은 당기고 눈은 크게", "scores": { "poser": 3, "director": 1 } }
+      ]
+    },
+    {
+      "emoji": "🔢",
+      "text": "사진 찍는 사람이 '하나, 둘, 셋!' 할 때 당신은?",
+      "options": [
+        { "text": "😁 셋에 맞춰서 자연스럽게 웃음", "scores": { "natural": 3, "shy": 1 } },
+        { "text": "🤪 셋에 갑자기 이상한 표정 만들기", "scores": { "clown": 3, "natural": 1 } },
+        { "text": "😳 긴장해서 굳어버림... 웃음이 안 나와", "scores": { "shy": 3, "observer": 1 } },
+        { "text": "🎯 '잠깐만요!' 하고 자세 다시 잡음", "scores": { "poser": 3, "director": 1 } }
+      ]
+    },
+    {
+      "emoji": "🖼️",
+      "text": "찍힌 사진을 확인할 때 당신의 반응은?",
+      "options": [
+        { "text": "🔎 내 얼굴 먼저 찾아서 눈 크게 뜨고 확인", "scores": { "poser": 3, "shy": 1 } },
+        { "text": "😂 웃긴 표정 나온 사람 먼저 찾음 ㅋㅋ", "scores": { "clown": 3, "natural": 1 } },
+        { "text": "📊 전체적인 구도랑 조명부터 체크", "scores": { "director": 3, "observer": 1 } },
+        { "text": "🫠 '나 진짜 못 나왔다...' 속으로 울기", "scores": { "shy": 3, "natural": 1 } }
+      ]
+    },
+    {
+      "emoji": "🔁",
+      "text": "사진이 마음에 안 들어서 다시 찍자고 할 때?",
+      "options": [
+        { "text": "🙋 내가 먼저 '다시 찍자!' 선언함", "scores": { "director": 2, "poser": 2 } },
+        { "text": "😌 '그냥 쓰자~ 자연스러운 게 더 좋아'", "scores": { "natural": 3, "clown": 1 } },
+        { "text": "🤫 마음에 안 들어도 그냥 넘어감", "scores": { "shy": 3, "observer": 1 } },
+        { "text": "🤹 '이번엔 내가 웃긴 거 해볼게!' 분위기 업", "scores": { "clown": 3, "director": 1 } }
+      ]
+    },
+    {
+      "emoji": "📲",
+      "text": "단체 사진이 카톡 단톡방에 올라왔을 때?",
+      "options": [
+        { "text": "😎 '나 잘 나왔다' 하고 바로 저장", "scores": { "poser": 3, "natural": 1 } },
+        { "text": "💀 내 얼굴 잘라내서 따로 저장 (삭제 요청 고려 중)", "scores": { "shy": 3, "observer": 1 } },
+        { "text": "🤣 내가 웃긴 표정 나온 컷 캡처해서 공유", "scores": { "clown": 3, "natural": 1 } },
+        { "text": "🧐 '이 각도 별로야, 다음엔 이렇게 찍자'", "scores": { "director": 3, "poser": 1 } }
+      ]
+    },
+    {
+      "emoji": "🏷️",
+      "text": "단체 사진을 SNS에 올릴 때 당신은?",
+      "options": [
+        { "text": "✂️ 내가 잘 나온 각도로 크롭해서 따로 올림", "scores": { "poser": 3, "director": 1 } },
+        { "text": "📤 그대로 올리고 전원 태그 남기기", "scores": { "natural": 3, "clown": 1 } },
+        { "text": "🚫 '나 빼고 올려줘...' 조용히 부탁함", "scores": { "shy": 3, "observer": 1 } },
+        { "text": "🎨 필터 보정해서 폼 나게 피드에 올림", "scores": { "director": 2, "poser": 2 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "director_poser": {
+      "emoji": "🎬",
+      "name": "현장 감독",
+      "sub": "Photo Director",
+      "color": "#ff6b6b",
+      "desc": "사진 찍기 전부터 자리 배치, 조명 체크, 구도 설정까지 당신 없으면 단체 사진은 없다! 모두가 잘 나오길 원하지만 사실 내가 제일 잘 나오길 바라는 거 알아요. 완벽한 사진을 위해서라면 열 번 찍는 것도 OK!",
+      "traits": [
+        { "icon": "🎯", "name": "통제력", "pct": 95 },
+        { "icon": "📸", "name": "구도력", "pct": 90 },
+        { "icon": "💅", "name": "자기관리", "pct": 85 },
+        { "icon": "😌", "name": "즉흥력", "pct": 28 }
+      ],
+      "good": "자연인",
+      "bad": "도망자"
+    },
+    "poser_natural": {
+      "emoji": "💅",
+      "name": "포즈 장인",
+      "sub": "Pose Master",
+      "color": "#ff9e7c",
+      "desc": "각도, 표정, 손 위치까지 사진 찍힐 때만큼은 프로 모델 그 자체! 브이 포즈는 기본이고 매번 새로운 포즈를 시도하는 당신은 단체 사진의 퀄리티를 책임집니다. 사진만 보면 항상 제일 잘 나온 사람이에요.",
+      "traits": [
+        { "icon": "✨", "name": "포즈력", "pct": 95 },
+        { "icon": "🪞", "name": "자기인식", "pct": 88 },
+        { "icon": "📐", "name": "각도감", "pct": 85 },
+        { "icon": "🤪", "name": "즉흥력", "pct": 35 }
+      ],
+      "good": "현장 감독",
+      "bad": "도망자"
+    },
+    "natural_clown": {
+      "emoji": "😊",
+      "name": "자연인",
+      "sub": "Natural One",
+      "color": "#06d6a0",
+      "desc": "꾸밈없이 찍혀도 자연스럽게 잘 나오는 타입! 포즈 같은 거 신경 쓰지 않아도 항상 사진에서 빛나는 당신은 주변 사람들의 부러움 대상입니다. 가끔 웃긴 짓도 해서 분위기 메이커 역할도 톡톡히 해요.",
+      "traits": [
+        { "icon": "🌿", "name": "자연스러움", "pct": 95 },
+        { "icon": "😄", "name": "표정력", "pct": 85 },
+        { "icon": "🎉", "name": "분위기력", "pct": 80 },
+        { "icon": "💅", "name": "포즈집착", "pct": 22 }
+      ],
+      "good": "현장 감독",
+      "bad": "도망자"
+    },
+    "clown_natural": {
+      "emoji": "🤪",
+      "name": "분위기 메이커",
+      "sub": "Mood Clown",
+      "color": "#ffd166",
+      "desc": "단체 사진에서 이상한 표정, 예상 못 한 포즈로 모두를 빵 터지게 만드는 장본인! 덕분에 가장 자연스럽고 웃긴 사진이 나오는 건 당신 덕이에요. 사진 찍는 순간을 진짜 추억으로 만드는 사람입니다.",
+      "traits": [
+        { "icon": "🤣", "name": "웃음 유발", "pct": 95 },
+        { "icon": "🎭", "name": "예측불가", "pct": 92 },
+        { "icon": "💥", "name": "존재감", "pct": 88 },
+        { "icon": "🪞", "name": "자기검열", "pct": 20 }
+      ],
+      "good": "자연인",
+      "bad": "관찰자"
+    },
+    "shy_observer": {
+      "emoji": "🫣",
+      "name": "도망자",
+      "sub": "Camera Avoider",
+      "color": "#a8dadc",
+      "desc": "카메라만 보이면 본능적으로 뒤로 숨는 당신... 사진 찍히는 게 세상에서 제일 불편하죠. 단체 사진 결과물 보면서 조용히 삭제 요청을 고려하는 것도 루틴이에요. 근데 가끔 무심하게 잘 나온 사진 있음ㅋㅋ",
+      "traits": [
+        { "icon": "🙈", "name": "회피력", "pct": 95 },
+        { "icon": "🤫", "name": "조용함", "pct": 88 },
+        { "icon": "😳", "name": "긴장도", "pct": 85 },
+        { "icon": "📸", "name": "사진욕심", "pct": 25 }
+      ],
+      "good": "자연인",
+      "bad": "현장 감독"
+    },
+    "observer_director": {
+      "emoji": "🔭",
+      "name": "관찰자",
+      "sub": "Silent Observer",
+      "color": "#c77dff",
+      "desc": "사진 찍힐 때보다 찍힌 사진 분석하는 걸 더 즐기는 조용한 눈썰미 타입! 표면적으로는 조용하지만 구도나 빛 같은 걸 무의식적으로 체크하고 있어요. 말은 없어도 단체 사진에서 가장 분위기 있게 나오는 사람입니다.",
+      "traits": [
+        { "icon": "👁️", "name": "관찰력", "pct": 95 },
+        { "icon": "🧘", "name": "차분함", "pct": 90 },
+        { "icon": "🎨", "name": "심미안", "pct": 80 },
+        { "icon": "📢", "name": "존재감", "pct": 30 }
+      ],
+      "good": "포즈 장인",
+      "bad": "분위기 메이커"
+    }
+  },
+
+  "combos": {
+    "director,poser": "director_poser",
+    "poser,director": "director_poser",
+    "poser,natural": "poser_natural",
+    "natural,poser": "poser_natural",
+    "natural,clown": "natural_clown",
+    "clown,natural": "clown_natural",
+    "shy,observer": "shy_observer",
+    "observer,shy": "shy_observer",
+    "observer,director": "observer_director",
+    "director,observer": "observer_director",
+    "clown,director": "clown_natural",
+    "director,clown": "director_poser",
+    "director,natural": "director_poser",
+    "director,shy": "observer_director",
+    "poser,clown": "poser_natural",
+    "poser,shy": "shy_observer",
+    "poser,observer": "director_poser",
+    "natural,director": "natural_clown",
+    "natural,shy": "natural_clown",
+    "natural,observer": "natural_clown",
+    "clown,poser": "clown_natural",
+    "clown,shy": "clown_natural",
+    "clown,observer": "observer_director",
+    "shy,director": "shy_observer",
+    "shy,poser": "shy_observer",
+    "shy,natural": "shy_observer",
+    "shy,clown": "shy_observer",
+    "observer,natural": "observer_director",
+    "observer,poser": "director_poser",
+    "observer,clown": "observer_director",
+    "director,director": "director_poser",
+    "poser,poser": "poser_natural",
+    "natural,natural": "natural_clown",
+    "clown,clown": "clown_natural",
+    "shy,shy": "shy_observer",
+    "observer,observer": "observer_director",
+    "adventurous,trendy": "clown_natural",
+    "trendy,adventurous": "clown_natural",
+    "focus,practical": "observer_director",
+    "practical,focus": "observer_director",
+    "cozy,social": "natural_clown",
+    "social,cozy": "natural_clown"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
