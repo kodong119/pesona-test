@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>공공장소 민폐 유형 테스트</title>
+  <meta property="og:title" content="공공장소 민폐 유형 테스트" />
+  <meta property="og:description" content="알면서도 멈추지 못하는 나의 민폐력 🫣" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "공공장소 민폐 유형 테스트",
+    "subtitle": "알면서도 멈추지 못하는 나의 민폐력 🫣",
+    "badge": "2026 공공장소 민폐 유형",
+    "emoji": "🫣",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/public-nuisance-type.html",
+    "resultBadge": "YOUR NUISANCE PERSONA"
+  },
+
+  "scoreKeys": ["loud", "spacehog", "slowpoke", "phonezombie", "smelly", "lineskip", "clumsy"],
+
+  "questions": [
+    {
+      "emoji": "🚇",
+      "text": "지하철에서 나도 모르게 하고 있는 행동은?",
+      "options": [
+        { "text": "🎵 이어폰 꽂았는데 옆에서 들린다는 거 앎... 근데 음악이 너무 좋아", "scores": { "loud": 3, "phonezombie": 1 } },
+        { "text": "🦵 다리 사이로 가방 놓고 쩍벌 자세 완성", "scores": { "spacehog": 3, "clumsy": 1 } },
+        { "text": "📱 카톡 알림음 켜둔 채로 무한 스크롤", "scores": { "phonezombie": 3, "loud": 1 } },
+        { "text": "🧍 문 앞에 딱 서서 내리는 사람 막기", "scores": { "slowpoke": 3, "spacehog": 1 } }
+      ]
+    },
+    {
+      "emoji": "🍿",
+      "text": "영화관에서 민폐 레이더에 걸린 적 있다면?",
+      "options": [
+        { "text": "😋 과자 봉지를 천천히 뜯으면 괜찮겠지...? (아님)", "scores": { "loud": 3, "clumsy": 1 } },
+        { "text": "📲 화면 밝기 최대로 폰 보기 (잠깐만~)", "scores": { "phonezombie": 3, "loud": 1 } },
+        { "text": "👟 앞 좌석 등받이에 발 올리기", "scores": { "spacehog": 3, "clumsy": 1 } },
+        { "text": "🗣️ 친구한테 '저거 죽는 거야?' 속삭임 (꽤 크게)", "scores": { "loud": 2, "slowpoke": 2 } }
+      ]
+    },
+    {
+      "emoji": "🛒",
+      "text": "마트·편의점 줄에서 나를 발견한다면?",
+      "options": [
+        { "text": "🏃 '하나만 사는데~' 하면서 새치기 슬쩍", "scores": { "lineskip": 3, "clumsy": 1 } },
+        { "text": "📦 계산대 올려놓고 추가 상품 가지러 훌쩍", "scores": { "slowpoke": 3, "lineskip": 1 } },
+        { "text": "💳 결제할 때 카드 찾으며 15초 정적 시전", "scores": { "slowpoke": 3, "clumsy": 1 } },
+        { "text": "📱 계산 중인데 통화 시작 (잠깐이면 되니까)", "scores": { "phonezombie": 3, "slowpoke": 1 } }
+      ]
+    },
+    {
+      "emoji": "🍽️",
+      "text": "식당에서 옆 테이블 눈치를 받은 상황은?",
+      "options": [
+        { "text": "📣 친구들이랑 너무 신나서 목소리 2배 업", "scores": { "loud": 3, "spacehog": 1 } },
+        { "text": "🧥 의자에 짐 잔뜩 걸쳐서 통로 반 차지", "scores": { "spacehog": 3, "clumsy": 1 } },
+        { "text": "🌶️ 냄새 진한 음식 포장해서 오픈석에서 먹기", "scores": { "smelly": 3, "loud": 1 } },
+        { "text": "📸 음식 사진 찍느라 서버 3번 기다리게 함", "scores": { "phonezombie": 2, "slowpoke": 2 } }
+      ]
+    },
+    {
+      "emoji": "🚶",
+      "text": "길을 걸을 때 민폐 포인트는?",
+      "options": [
+        { "text": "🐢 폰 보면서 갑자기 멈추거나 느려짐", "scores": { "phonezombie": 3, "slowpoke": 1 } },
+        { "text": "👫 친구랑 나란히 걸어서 보행로 전체 점령", "scores": { "spacehog": 3, "loud": 1 } },
+        { "text": "🎧 이어폰 끼고 뒤에서 부르는 말 못 들음", "scores": { "loud": 2, "phonezombie": 2 } },
+        { "text": "💨 에스컬레이터 좌측에 서서 급한 사람 막기", "scores": { "slowpoke": 3, "spacehog": 1 } }
+      ]
+    },
+    {
+      "emoji": "🏋️",
+      "text": "헬스장·카페 등 공용공간에서 나는?",
+      "options": [
+        { "text": "🏋️ 기구 위에 수건·폰 올려두고 자리 점령", "scores": { "spacehog": 3, "lineskip": 1 } },
+        { "text": "🎶 운동하면서 콧노래나 허밍 흘려보내기", "scores": { "loud": 3, "clumsy": 1 } },
+        { "text": "💨 운동 전 마늘 듬뿍 넣은 점심 먹고 출동", "scores": { "smelly": 3, "clumsy": 1 } },
+        { "text": "📵 러닝머신에서 영상 소리 켜놓기", "scores": { "loud": 2, "phonezombie": 2 } }
+      ]
+    },
+    {
+      "emoji": "🎤",
+      "text": "나도 모르게 소리를 높이는 상황은?",
+      "options": [
+        { "text": "📞 전화 통화할 때 목소리가 자동으로 커짐", "scores": { "loud": 3, "phonezombie": 1 } },
+        { "text": "😂 웃길 때 '빵' 터지는 거 못 참음", "scores": { "loud": 2, "clumsy": 2 } },
+        { "text": "😤 줄 새치기 당했을 때 혼잣말 꽤 크게", "scores": { "loud": 2, "lineskip": 2 } },
+        { "text": "🍜 라멘·냉면 먹을 때 면 흡입 소리 장인", "scores": { "loud": 3, "smelly": 1 } }
+      ]
+    },
+    {
+      "emoji": "🚌",
+      "text": "버스·기차에서 민폐인 걸 알지만...",
+      "options": [
+        { "text": "🎒 백팩 맨 채로 계속 몸 돌려서 사람 침",
+          "scores": { "clumsy": 3, "spacehog": 1 } },
+        { "text": "🍔 냄새 강렬한 음식 먹기 (배고픈 건 죄가 아냐)", "scores": { "smelly": 3, "clumsy": 1 } },
+        { "text": "🪑 창가 자리 차지하고 짐으로 옆자리 막기", "scores": { "spacehog": 3, "lineskip": 1 } },
+        { "text": "⚡ 문 열리자마자 내리는 사람보다 먼저 탑승", "scores": { "lineskip": 3, "slowpoke": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "loud_phonezombie": {
+      "emoji": "📣",
+      "name": "무의식 DJ",
+      "sub": "Unconscious Noise Maker",
+      "color": "#ff6b6b",
+      "desc": "나는 조용히 있다고 생각하지만 주변은 이미 콘서트장... 통화 소리, 알림음, 영상 소리까지 당신 주변엔 항상 사운드트랙이 흘러요. 제일 무서운 건 본인이 전혀 모른다는 것! 주변 사람들 이어폰 사용량이 당신 때문에 늘었습니다.",
+      "traits": [
+        { "icon": "📣", "name": "소음력", "pct": 95 },
+        { "icon": "📱", "name": "폰 중독", "pct": 88 },
+        { "icon": "😶", "name": "자각 없음", "pct": 90 },
+        { "icon": "🤫", "name": "정숙력", "pct": 20 }
+      ],
+      "good": "공간 점령러",
+      "bad": "냄새 무법자"
+    },
+    "spacehog_clumsy": {
+      "emoji": "🗺️",
+      "name": "공간 점령러",
+      "sub": "Space Monopolizer",
+      "color": "#ffa94d",
+      "desc": "당신이 앉으면 반경 1미터는 당신 영토! 가방, 코트, 다리, 팔꿈치가 자연스럽게 퍼져나갑니다. 의도는 없지만 결과는 항상 점령... 당신 옆자리는 사실상 짐 보관소예요. 누군가 불편해도 눈치채기가 참 어렵죠.",
+      "traits": [
+        { "icon": "🗺️", "name": "영역 확장", "pct": 95 },
+        { "icon": "🎒", "name": "짐 전파력", "pct": 90 },
+        { "icon": "💥", "name": "충돌 빈도", "pct": 82 },
+        { "icon": "🫶", "name": "배려력", "pct": 25 }
+      ],
+      "good": "느림보 차단러",
+      "bad": "새치기 스피더"
+    },
+    "slowpoke_lineskip": {
+      "emoji": "🐢",
+      "name": "느림보 차단러",
+      "sub": "The Human Roadblock",
+      "color": "#74c69d",
+      "desc": "본인은 여유롭고 평화롭지만 뒤에 있는 사람들은 속으로 비명을 지르는 중! 계산대, 에스컬레이터, 출입구... 어디서든 당신은 자연스럽게 흐름을 막는 인간 방파제가 됩니다. 급한 세상에서 홀로 슬로우 라이프를 실천 중이에요.",
+      "traits": [
+        { "icon": "🐢", "name": "느림력", "pct": 93 },
+        { "icon": "🚧", "name": "통로 차단", "pct": 88 },
+        { "icon": "😌", "name": "여유로움", "pct": 85 },
+        { "icon": "⚡", "name": "순발력", "pct": 22 }
+      ],
+      "good": "무의식 DJ",
+      "bad": "공간 점령러"
+    },
+    "phonezombie_slowpoke": {
+      "emoji": "🧟",
+      "name": "폰 좀비",
+      "sub": "Phone Zombie Wanderer",
+      "color": "#9775fa",
+      "desc": "폰을 들면 세상이 사라집니다. 걸으면서, 줄 서면서, 계산하면서도 손가락은 멈추지 않아요. 주변 민폐 민원 1위 등극은 이미 예약된 운명... 당신이 멈출 때마다 뒤에서 연쇄 추돌이 일어나고 있습니다.",
+      "traits": [
+        { "icon": "📱", "name": "폰 집착", "pct": 95 },
+        { "icon": "🧟", "name": "주변 무감각", "pct": 90 },
+        { "icon": "🛑", "name": "갑작스런 정지", "pct": 85 },
+        { "icon": "👀", "name": "상황 인식", "pct": 20 }
+      ],
+      "good": "느림보 차단러",
+      "bad": "냄새 무법자"
+    },
+    "smelly_clumsy": {
+      "emoji": "💨",
+      "name": "냄새 무법자",
+      "sub": "Scent Outlaw",
+      "color": "#51cf66",
+      "desc": "밀폐된 공간에서 당신의 존재는 오감으로 느껴집니다. 마늘 삼겹살 점심 후 지하철 탑승, 버스에서 피자 흡입, 운동 후 냄새 방치... 모두 '잠깐이면 괜찮겠지' 마인드지만 주변인 코는 이미 신고 접수 완료예요.",
+      "traits": [
+        { "icon": "💨", "name": "냄새 파급력", "pct": 95 },
+        { "icon": "😅", "name": "무감각", "pct": 87 },
+        { "icon": "🍔", "name": "음식 사랑", "pct": 92 },
+        { "icon": "🌸", "name": "향기력", "pct": 28 }
+      ],
+      "good": "폰 좀비",
+      "bad": "무의식 DJ"
+    },
+    "lineskip_spacehog": {
+      "emoji": "⚡",
+      "name": "새치기 스피더",
+      "sub": "Queue Jumper Speedster",
+      "color": "#ff9e7c",
+      "desc": "기다리는 건 당신에게 선택사항! '잠깐만', '하나만', '금방 되는데~' 라는 마법 주문으로 줄을 녹여버립니다. 빠른 것도 능력이라고 자위하지만 뒤에 서 있던 사람들의 눈빛은 이미 레이저입니다. 효율의 달인, 민폐의 제왕.",
+      "traits": [
+        { "icon": "⚡", "name": "스피드", "pct": 95 },
+        { "icon": "🏆", "name": "새치기 스킬", "pct": 90 },
+        { "icon": "😎", "name": "뻔뻔함", "pct": 85 },
+        { "icon": "😇", "name": "양보력", "pct": 23 }
+      ],
+      "good": "무의식 DJ",
+      "bad": "느림보 차단러"
+    }
+  },
+
+  "combos": {
+    "loud,phonezombie": "loud_phonezombie",
+    "phonezombie,loud": "loud_phonezombie",
+    "spacehog,clumsy": "spacehog_clumsy",
+    "clumsy,spacehog": "spacehog_clumsy",
+    "slowpoke,lineskip": "slowpoke_lineskip",
+    "lineskip,slowpoke": "slowpoke_lineskip",
+    "phonezombie,slowpoke": "phonezombie_slowpoke",
+    "slowpoke,phonezombie": "phonezombie_slowpoke",
+    "smelly,clumsy": "smelly_clumsy",
+    "clumsy,smelly": "smelly_clumsy",
+    "lineskip,spacehog": "lineskip_spacehog",
+    "spacehog,lineskip": "lineskip_spacehog",
+    "loud,clumsy": "loud_phonezombie",
+    "clumsy,loud": "loud_phonezombie",
+    "loud,spacehog": "loud_phonezombie",
+    "spacehog,loud": "loud_phonezombie",
+    "loud,slowpoke": "loud_phonezombie",
+    "slowpoke,loud": "loud_phonezombie",
+    "loud,smelly": "loud_phonezombie",
+    "smelly,loud": "loud_phonezombie",
+    "loud,lineskip": "loud_phonezombie",
+    "lineskip,loud": "loud_phonezombie",
+    "spacehog,slowpoke": "spacehog_clumsy",
+    "slowpoke,spacehog": "spacehog_clumsy",
+    "spacehog,phonezombie": "spacehog_clumsy",
+    "phonezombie,spacehog": "spacehog_clumsy",
+    "spacehog,smelly": "spacehog_clumsy",
+    "smelly,spacehog": "spacehog_clumsy",
+    "clumsy,slowpoke": "smelly_clumsy",
+    "slowpoke,clumsy": "smelly_clumsy",
+    "clumsy,phonezombie": "smelly_clumsy",
+    "phonezombie,clumsy": "smelly_clumsy",
+    "clumsy,lineskip": "smelly_clumsy",
+    "lineskip,clumsy": "smelly_clumsy",
+    "slowpoke,smelly": "slowpoke_lineskip",
+    "smelly,slowpoke": "slowpoke_lineskip",
+    "lineskip,phonezombie": "lineskip_spacehog",
+    "phonezombie,lineskip": "lineskip_spacehog",
+    "lineskip,smelly": "lineskip_spacehog",
+    "smelly,lineskip": "lineskip_spacehog",
+    "smelly,phonezombie": "smelly_clumsy",
+    "phonezombie,smelly": "smelly_clumsy"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
