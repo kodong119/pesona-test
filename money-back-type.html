@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>빌린 돈 받아야 할 때 나는 어떤 타입?</title>
+  <meta property="og:title" content="빌린 돈 받아야 할 때 나는 어떤 타입?" />
+  <meta property="og:description" content="돈 얘기 꺼내는 당신의 스타일 💸" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "빌린 돈 받아야 할 때 나는 어떤 타입?",
+    "subtitle": "돈 얘기 꺼내는 당신의 스타일 💸",
+    "badge": "2026 돈 회수 유형 테스트",
+    "emoji": "💸",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/money-back-type.html",
+    "resultBadge": "YOUR MONEY-BACK PERSONA"
+  },
+
+  "scoreKeys": ["direct", "indirect", "patient", "anxious", "humor", "cold"],
+
+  "questions": [
+    {
+      "emoji": "📅",
+      "text": "돈 빌려준 지 약속한 날이 됐는데 아무 연락이 없다. 첫 반응은?",
+      "options": [
+        { "text": "📱 바로 카톡 보냄 '오늘 갚기로 했지?'", "scores": { "direct": 3, "cold": 1 } },
+        { "text": "😮‍💨 일단 하루 더 기다려봄... 바쁠 수도 있잖아", "scores": { "patient": 3, "indirect": 1 } },
+        { "text": "😅 '야 근데 혹시... 기억해?' 슬쩍 떠봄", "scores": { "indirect": 3, "humor": 1 } },
+        { "text": "💀 속으로 '실화냐' 하면서 스트레스 쌓임", "scores": { "anxious": 3, "patient": 1 } }
+      ]
+    },
+    {
+      "emoji": "💬",
+      "text": "돈 얘기를 꺼낼 때 보통 어떻게 운을 떼?",
+      "options": [
+        { "text": "🎯 '나 그때 빌려준 돈 돌려줘' 직구", "scores": { "direct": 3, "cold": 1 } },
+        { "text": "🌀 딴 얘기 하다가 자연스럽게 유도함", "scores": { "indirect": 3, "humor": 1 } },
+        { "text": "😂 '나 요즘 좀 쪼들리는데ㅋㅋ' 웃기게 시작", "scores": { "humor": 3, "indirect": 1 } },
+        { "text": "😶 사실 잘 못 꺼내고 타이밍만 봄", "scores": { "anxious": 2, "patient": 2 } }
+      ]
+    },
+    {
+      "emoji": "🫥",
+      "text": "상대방이 먼저 얘기 안 꺼내면 얼마나 기다릴 수 있어?",
+      "options": [
+        { "text": "⏰ 약속 날 당일까지만. 그 이후는 바로 연락", "scores": { "direct": 3, "cold": 1 } },
+        { "text": "📆 일주일 정도? 그래도 기억하겠지...", "scores": { "patient": 3, "anxious": 1 } },
+        { "text": "🌊 한 달도 기다릴 수 있음. 관계가 더 중요해", "scores": { "patient": 3, "indirect": 1 } },
+        { "text": "😵 기다리면서 매일 생각남. 멘탈이 흔들림", "scores": { "anxious": 3, "patient": 1 } }
+      ]
+    },
+    {
+      "emoji": "📲",
+      "text": "카톡으로 돈 얘기 꺼낼 때 어떻게 보내?",
+      "options": [
+        { "text": "💬 '나 ○○원 빌려줬던 거 기억하지?' 심플하게", "scores": { "direct": 3, "cold": 1 } },
+        { "text": "😂 'ㅋㅋ 근데 있잖아 혹시 돈은...' 쿠션 잔뜩", "scores": { "humor": 2, "indirect": 2 } },
+        { "text": "🔔 계좌번호 찍어서 그냥 보냄 (말 없이)", "scores": { "cold": 3, "direct": 1 } },
+        { "text": "😰 보내려다가 지우고... 또 보내려다가 지움", "scores": { "anxious": 3, "patient": 1 } }
+      ]
+    },
+    {
+      "emoji": "🙅",
+      "text": "'지금 좀 어려워...' 라고 하면 당신의 반응은?",
+      "options": [
+        { "text": "🗓️ '그럼 언제 가능해? 날짜 정하자'", "scores": { "direct": 3, "cold": 1 } },
+        { "text": "😢 '아 그래... 괜찮아' 하고 혼자 속 끓임", "scores": { "patient": 2, "anxious": 2 } },
+        { "text": "😬 '나도 사실 좀 급해서ㅎㅎ' 웃으며 압박", "scores": { "humor": 3, "indirect": 1 } },
+        { "text": "❄️ 속으로 관계 재정립 시작함. 다음엔 없다", "scores": { "cold": 3, "direct": 1 } }
+      ]
+    },
+    {
+      "emoji": "🎭",
+      "text": "여러 번 미뤄졌을 때 당신의 전략은?",
+      "options": [
+        { "text": "📞 전화로 확실하게 통화함. 카톡은 씹힐 수 있으니", "scores": { "direct": 3, "cold": 1 } },
+        { "text": "📝 '이번엔 진짜야...' 기대하며 또 기다림", "scores": { "patient": 3, "anxious": 1 } },
+        { "text": "🤡 '너 혹시 내 계좌 잊어버린 거 아니지?ㅋㅋ' 드립", "scores": { "humor": 3, "indirect": 1 } },
+        { "text": "🧊 연락 횟수 줄이고 서서히 거리 둠", "scores": { "cold": 3, "patient": 1 } }
+      ]
+    },
+    {
+      "emoji": "😬",
+      "text": "돈 얘기 꺼내기 전 기분은?",
+      "options": [
+        { "text": "😎 별로 안 어색함. 내가 빌려줬는데 뭐", "scores": { "direct": 3, "cold": 1 } },
+        { "text": "😰 심장 두근거리고 말 꺼내기 무서움", "scores": { "anxious": 3, "indirect": 1 } },
+        { "text": "🎢 어색하긴 한데 어떻게든 웃기게 풀면 됨", "scores": { "humor": 3, "indirect": 1 } },
+        { "text": "🌀 눈치 보다가 타이밍 놓치고 또 다음으로 미룸", "scores": { "patient": 2, "anxious": 2 } }
+      ]
+    },
+    {
+      "emoji": "💔",
+      "text": "결국 못 받게 됐을 때 당신의 결말은?",
+      "options": [
+        { "text": "🚨 법적 조치 or 주변에 공론화 고려함", "scores": { "cold": 3, "direct": 1 } },
+        { "text": "😞 '그냥 내가 잘못 본 거지...' 포기하고 사람 정리", "scores": { "cold": 2, "anxious": 2 } },
+        { "text": "😂 '등록금 낸 셈 치자ㅋㅋ' 웃어넘김 (속은 눈물)", "scores": { "humor": 3, "patient": 1 } },
+        { "text": "🕊️ 다신 빌려주지 않겠다 다짐하고 조용히 넘김", "scores": { "patient": 2, "indirect": 2 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "direct_cold": {
+      "emoji": "🎯",
+      "name": "직구 회수러",
+      "sub": "No-Nonsense Collector",
+      "color": "#ff4757",
+      "desc": "돈 얘기는 그냥 하면 되는 거 아님? 빌려줬으면 받는 게 당연하고, 어색한 건 상대방 몫이라고 생각하는 현실주의자예요. '내 돈인데 내가 달라고 하는 게 뭐가 미안해'가 인생철학입니다.",
+      "traits": [
+        { "icon": "🎯", "name": "직진력", "pct": 95 },
+        { "icon": "🧊", "name": "쿨함", "pct": 90 },
+        { "icon": "💪", "name": "결단력", "pct": 88 },
+        { "icon": "😅", "name": "눈치력", "pct": 22 }
+      ],
+      "good": "웃음 협상가",
+      "bad": "무한 기다림러"
+    },
+    "indirect_humor": {
+      "emoji": "🌀",
+      "name": "간접 화법러",
+      "sub": "Subtle Hint Dropper",
+      "color": "#a29bfe",
+      "desc": "직접 말하기엔 좀 그렇고... 상대방이 알아서 눈치채줬으면 하는 당신. 슬쩍슬쩍 힌트를 던지면서 스스로 꺼내길 기다리는 섬세한 전략가예요. 근데 상대방은 못 알아들을 수도 있다는 게 함정.",
+      "traits": [
+        { "icon": "🌀", "name": "간접화법", "pct": 92 },
+        { "icon": "👀", "name": "눈치력", "pct": 88 },
+        { "icon": "🕊️", "name": "관계중시", "pct": 85 },
+        { "icon": "🎯", "name": "직진력", "pct": 28 }
+      ],
+      "good": "참을 인 마스터",
+      "bad": "직구 회수러"
+    },
+    "patient_indirect": {
+      "emoji": "🕊️",
+      "name": "무한 기다림러",
+      "sub": "Forever Patient Waiter",
+      "color": "#55efc4",
+      "desc": "기다리면 주겠지... 설마 안 갚겠어? 관계를 해칠까봐 선뜻 말 못 꺼내고 기다리고 또 기다리는 인내왕이에요. 근데 그 인내심이 상대방에겐 그냥 '잊어도 되는 사람'으로 보일 수 있답니다.",
+      "traits": [
+        { "icon": "🕊️", "name": "인내력", "pct": 95 },
+        { "icon": "💛", "name": "관계중시", "pct": 90 },
+        { "icon": "🌿", "name": "온화함", "pct": 85 },
+        { "icon": "💢", "name": "결단력", "pct": 20 }
+      ],
+      "good": "간접 화법러",
+      "bad": "냉정 청산러"
+    },
+    "anxious_patient": {
+      "emoji": "😰",
+      "name": "속앓이 걱정러",
+      "sub": "Silent Stress Hoarder",
+      "color": "#fdcb6e",
+      "desc": "말은 못 하고 혼자 속으로 끓이는 유형! 매일 생각나는데 꺼내기가 너무 무섭고 어색해서 타이밍만 노리다가 한 달이 지나요. 말 못한 스트레스가 쌓여서 결국 본인이 더 힘들어지는 타입이에요.",
+      "traits": [
+        { "icon": "😰", "name": "걱정력", "pct": 95 },
+        { "icon": "💭", "name": "생각량", "pct": 93 },
+        { "icon": "🤝", "name": "관계배려", "pct": 80 },
+        { "icon": "🎯", "name": "실행력", "pct": 25 }
+      ],
+      "good": "무한 기다림러",
+      "bad": "직구 회수러"
+    },
+    "humor_indirect": {
+      "emoji": "😂",
+      "name": "웃음 협상가",
+      "sub": "Joke-It-Out Negotiator",
+      "color": "#ff9f43",
+      "desc": "돈 얘기도 웃기게 하면 돼! 어색한 분위기를 유머로 부숴버리는 당신은 '나 요즘 카드값이ㅋㅋ' 같은 드립으로 자연스럽게 돈 얘기를 꺼내는 재주가 있어요. 분위기는 살리면서 할 말은 다 하는 현명한 전략가입니다.",
+      "traits": [
+        { "icon": "😂", "name": "유머력", "pct": 95 },
+        { "icon": "🎭", "name": "분위기력", "pct": 90 },
+        { "icon": "🤝", "name": "관계유지", "pct": 85 },
+        { "icon": "🧊", "name": "단호함", "pct": 35 }
+      ],
+      "good": "직구 회수러",
+      "bad": "속앓이 걱정러"
+    },
+    "cold_direct": {
+      "emoji": "❄️",
+      "name": "냉정 청산러",
+      "sub": "Ice-Cold Accountant",
+      "color": "#74b9ff",
+      "desc": "못 받으면? 관계도 같이 정리하면 되지. 돈을 못 갚는 사람은 사람 자체가 문제라고 보는 냉철한 현실주의자예요. 계좌번호 찍어 보내거나 공론화까지 고려하는 당신, 다음에 빌려달라는 사람은 없을 거예요.",
+      "traits": [
+        { "icon": "❄️", "name": "냉정함", "pct": 95 },
+        { "icon": "⚖️", "name": "원칙주의", "pct": 92 },
+        { "icon": "🎯", "name": "실행력", "pct": 88 },
+        { "icon": "💛", "name": "관계배려", "pct": 20 }
+      ],
+      "good": "직구 회수러",
+      "bad": "무한 기다림러"
+    }
+  },
+
+  "combos": {
+    "direct,cold": "direct_cold",
+    "cold,direct": "direct_cold",
+    "indirect,humor": "indirect_humor",
+    "humor,indirect": "indirect_humor",
+    "patient,indirect": "patient_indirect",
+    "indirect,patient": "patient_indirect",
+    "anxious,patient": "anxious_patient",
+    "patient,anxious": "anxious_patient",
+    "humor,indirect": "humor_indirect",
+    "indirect,humor": "humor_indirect",
+    "cold,direct": "cold_direct",
+    "direct,cold": "cold_direct",
+    "direct,indirect": "direct_cold",
+    "direct,patient": "direct_cold",
+    "direct,anxious": "direct_cold",
+    "direct,humor": "direct_cold",
+    "indirect,cold": "indirect_humor",
+    "indirect,anxious": "indirect_humor",
+    "indirect,direct": "patient_indirect",
+    "patient,cold": "patient_indirect",
+    "patient,direct": "anxious_patient",
+    "patient,humor": "patient_indirect",
+    "anxious,direct": "anxious_patient",
+    "anxious,indirect": "anxious_patient",
+    "anxious,cold": "anxious_patient",
+    "anxious,humor": "humor_indirect",
+    "humor,direct": "direct_cold",
+    "humor,patient": "humor_indirect",
+    "humor,anxious": "humor_indirect",
+    "humor,cold": "direct_cold",
+    "cold,indirect": "cold_direct",
+    "cold,patient": "cold_direct",
+    "cold,anxious": "cold_direct",
+    "cold,humor": "cold_direct",
+    "patient,social": "patient_indirect",
+    "anxious,social": "anxious_patient",
+    "direct,social": "direct_cold",
+    "cold,social": "cold_direct",
+    "humor,social": "humor_indirect",
+    "indirect,social": "indirect_humor",
+    "social,direct": "direct_cold",
+    "social,cold": "cold_direct",
+    "social,patient": "patient_indirect"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
