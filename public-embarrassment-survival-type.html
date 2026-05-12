@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>공개 망신 당했을 때 나는 어떤 타입?</title>
+  <meta property="og:title" content="공개 망신 당했을 때 나는 어떤 타입?" />
+  <meta property="og:description" content="흑역사 앞에서 드러나는 나의 생존 본능 😱" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "공개 망신 당했을 때 나는 어떤 타입?",
+    "subtitle": "흑역사 앞에서 드러나는 나의 생존 본능 😱",
+    "badge": "2026 망신 생존 테스트",
+    "emoji": "😱",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/public-embarrassment-survival-type.html",
+    "resultBadge": "YOUR SURVIVAL PERSONA"
+  },
+
+  "scoreKeys": ["vanish", "clown", "rage", "chill", "revenge", "deflect"],
+
+  "questions": [
+    {
+      "emoji": "😳",
+      "text": "회의 중 발표하다가 헛소리를 해버렸다... 첫 반응은?",
+      "options": [
+        { "text": "🫥 얼굴이 빨개지면서 말이 멈춤... 그냥 증발하고 싶음", "scores": { "vanish": 3, "chill": 1 } },
+        { "text": "😂 \"아 제가 뭐라고 했죠?\" 하고 웃음으로 넘김", "scores": { "clown": 3, "deflect": 1 } },
+        { "text": "😤 속으로 \"이거 내 발표 자료 맞나?\" 책임 소재 따짐", "scores": { "rage": 3, "revenge": 1 } },
+        { "text": "😎 \"방금 건 테스트였고요~\" 하고 태연하게 넘김", "scores": { "chill": 3, "clown": 1 } }
+      ]
+    },
+    {
+      "emoji": "🤳",
+      "text": "내가 넘어지는 영상이 단톡방에 공유됐다. 어떻게 반응해?",
+      "options": [
+        { "text": "💀 단톡방 알림 끄고 며칠 잠수", "scores": { "vanish": 3, "rage": 1 } },
+        { "text": "😂 \"ㅋㅋ 이거 나야 레전드 아님?\" 본인이 더 퍼뜨림", "scores": { "clown": 3, "deflect": 1 } },
+        { "text": "🔥 영상 올린 사람한테 직접 DM 날림", "scores": { "rage": 3, "revenge": 1 } },
+        { "text": "😌 \"다들 넘어지잖아~ 나만 찍혔을 뿐\" 하고 넘어감", "scores": { "chill": 3, "clown": 1 } }
+      ]
+    },
+    {
+      "emoji": "🎤",
+      "text": "노래방에서 마이크 잡고 음이탈 대폭발... 다들 폭소!",
+      "options": [
+        { "text": "🙈 마이크 내려놓고 화장실로 도망침", "scores": { "vanish": 3, "chill": 1 } },
+        { "text": "🎸 \"인디 감성이다~\" 하고 더 크게 부름", "scores": { "clown": 3, "chill": 1 } },
+        { "text": "😒 \"이 마이크 문제 있는 거 아님?\" 마이크 탓함", "scores": { "deflect": 3, "rage": 1 } },
+        { "text": "🤷 웃음 포인트 됐으니 오히려 분위기 메이커 됐다 싶음", "scores": { "chill": 3, "deflect": 1 } }
+      ]
+    },
+    {
+      "emoji": "📧",
+      "text": "이메일을 엉뚱한 사람한테 보냈는데... 그 사람이 답장을 보내옴",
+      "options": [
+        { "text": "🫠 노트북 덮고 5분간 멍... 그냥 퇴사하고 싶음", "scores": { "vanish": 3, "chill": 1 } },
+        { "text": "😂 \"앗 죄송해요 ㅎㅎ 복권 같은 순간이네요\" 유머로 수습", "scores": { "clown": 3, "deflect": 1 } },
+        { "text": "💢 이메일 시스템 탓하면서 IT팀에 클레임 넣음", "scores": { "rage": 2, "deflect": 2 } },
+        { "text": "😌 공손하게 사과 메일 보내고 쿨하게 마무리", "scores": { "chill": 3, "revenge": 1 } }
+      ]
+    },
+    {
+      "emoji": "🍝",
+      "text": "소개팅 자리에서 파스타를 옷에 쏟아버렸다!",
+      "options": [
+        { "text": "🚽 \"화장실 좀...\" 하고 10분 동안 안 나옴", "scores": { "vanish": 3, "rage": 1 } },
+        { "text": "🤌 \"오 이탈리아 감성 물씬 풍기는 타투 생겼네요\" 드립 시전", "scores": { "clown": 3, "chill": 1 } },
+        { "text": "😤 직원한테 \"냅킨 왜 없어요?\" 하고 화풀이", "scores": { "rage": 2, "deflect": 2 } },
+        { "text": "😅 같이 웃으면서 \"이런 사람이에요 저\" 솔직하게 인정", "scores": { "chill": 2, "clown": 2 } }
+      ]
+    },
+    {
+      "emoji": "👀",
+      "text": "나에 대한 뒷담화를 당사자 앞에서 해버렸다. 눈이 마주쳤어!",
+      "options": [
+        { "text": "😶 그 자리 즉시 이탈... 집 가고 싶다", "scores": { "vanish": 3, "chill": 1 } },
+        { "text": "😂 \"어? 마침 잘 됐다! 직접 물어보려 했는데~\" 드립", "scores": { "clown": 2, "deflect": 2 } },
+        { "text": "😡 \"근데 내 말이 틀린 말이에요?\" 정면 돌파", "scores": { "rage": 3, "revenge": 1 } },
+        { "text": "😌 \"솔직한 게 낫잖아요\" 하고 쿨하게 대화 시도", "scores": { "chill": 3, "deflect": 1 } }
+      ]
+    },
+    {
+      "emoji": "🎂",
+      "text": "생일 축하받는 줄 알았는데 다른 사람 생일이었음... 혼자 일어섰어",
+      "options": [
+        { "text": "🪦 그냥 거기서 사망... 기억에서 지워버리고 싶음", "scores": { "vanish": 3, "rage": 1 } },
+        { "text": "🥳 \"같이 축하해요~!\" 하고 박수 치며 합류", "scores": { "clown": 3, "chill": 1 } },
+        { "text": "😤 날짜 알려준 사람 나중에 꼭 따짐", "scores": { "revenge": 3, "rage": 1 } },
+        { "text": "😂 SNS에 \"오늘의 인생 명장면\" 업로드", "scores": { "deflect": 3, "clown": 1 } }
+      ]
+    },
+    {
+      "emoji": "📸",
+      "text": "단체사진 찍혔는데 내 표정만 레전드... 사진이 공유됨",
+      "options": [
+        { "text": "🙏 제발 이 사진 삭제해달라고 간청", "scores": { "vanish": 3, "deflect": 1 } },
+        { "text": "😂 내가 먼저 프로필 사진으로 설정", "scores": { "clown": 3, "chill": 1 } },
+        { "text": "😒 \"사진 찍을 때 말을 해줬어야지\" 사진사 탓", "scores": { "deflect": 2, "rage": 2 } },
+        { "text": "😎 \"이게 진짜 내 모습이지 뭐\" 하고 개의치 않음", "scores": { "chill": 3, "revenge": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "vanish_chill": {
+      "emoji": "🫥",
+      "name": "증발 전문가",
+      "sub": "The Great Vanisher",
+      "color": "#8ecae6",
+      "desc": "망신은 망신이고, 일단 현장에서 사라지는 게 우선! 화장실, 편의점, 심하면 귀가까지... 물리적 도주가 최고의 전략이에요. 나중에 혼자 이불킥 수백 번 하지만 현장 대처는 일단 튀고 봅니다.",
+      "traits": [
+        { "icon": "🏃", "name": "도주력", "pct": 95 },
+        { "icon": "😳", "name": "수치력", "pct": 90 },
+        { "icon": "🧠", "name": "이불킥량", "pct": 88 },
+        { "icon": "😎", "name": "뻔뻔함", "pct": 22 }
+      ],
+      "good": "쿨 내려놓기 달인",
+      "bad": "웃음으로 승부"
+    },
+    "clown_deflect": {
+      "emoji": "🤡",
+      "name": "웃음으로 승부",
+      "sub": "Comedy Survivor",
+      "color": "#ffb703",
+      "desc": "망신? 그게 뭔데요~ 내가 먼저 웃으면 상황 종료! 어떤 흑역사도 드립 하나로 역전시키는 천재적 유머 감각의 소유자예요. 사실 속으로는 좀 민망하지만 절대 티 안 냄.",
+      "traits": [
+        { "icon": "😂", "name": "유머력", "pct": 95 },
+        { "icon": "🎭", "name": "연기력", "pct": 88 },
+        { "icon": "⚡", "name": "대처 속도", "pct": 85 },
+        { "icon": "😶", "name": "진지함", "pct": 20 }
+      ],
+      "good": "쿨 내려놓기 달인",
+      "bad": "증발 전문가"
+    },
+    "rage_revenge": {
+      "emoji": "🔥",
+      "name": "분노의 반격러",
+      "sub": "Rage Counter Striker",
+      "color": "#e63946",
+      "desc": "망신을 당하면 수치보다 분노가 먼저 올라오는 타입! 누구 탓인지부터 파악하고 나중에 반드시 되갚아준다는 마음가짐. 절대 그냥 넘어가는 법이 없고, 그게 또 당신의 매력이에요.",
+      "traits": [
+        { "icon": "💢", "name": "분노 게이지", "pct": 95 },
+        { "icon": "🎯", "name": "복수심", "pct": 90 },
+        { "icon": "🧠", "name": "기억력", "pct": 88 },
+        { "icon": "😌", "name": "쿨함", "pct": 25 }
+      ],
+      "good": "웃음으로 승부",
+      "bad": "쿨 내려놓기 달인"
+    },
+    "chill_clown": {
+      "emoji": "😎",
+      "name": "쿨 내려놓기 달인",
+      "sub": "Effortless Chill Master",
+      "color": "#06d6a0",
+      "desc": "망신이요? 제 인생에 그런 거 없는데요. 진짜로 별로 안 창피한 타입! 실수도 경험이고 웃음도 추억이라는 마인드로 모든 흑역사를 가볍게 털어냅니다. 주변 사람들이 오히려 더 당황해요.",
+      "traits": [
+        { "icon": "😎", "name": "뻔뻔함", "pct": 95 },
+        { "icon": "🌊", "name": "쿨함", "pct": 92 },
+        { "icon": "💪", "name": "멘탈력", "pct": 90 },
+        { "icon": "😳", "name": "수치심", "pct": 22 }
+      ],
+      "good": "증발 전문가",
+      "bad": "분노의 반격러"
+    },
+    "deflect_rage": {
+      "emoji": "🪄",
+      "name": "책임 전가 마법사",
+      "sub": "Master of Deflection",
+      "color": "#9b5de5",
+      "desc": "내 잘못이 아니야, 마이크가 문제고 조명이 이상했을 뿐! 어떤 상황에서도 본인 책임을 최소화하는 탁월한 재능의 소유자예요. 뻔뻔한 것 같지만 의외로 스트레스를 잘 안 받아서 부러운 유형.",
+      "traits": [
+        { "icon": "🪄", "name": "전가력", "pct": 95 },
+        { "icon": "🧠", "name": "논리력", "pct": 85 },
+        { "icon": "😤", "name": "억울함", "pct": 88 },
+        { "icon": "🙏", "name": "반성력", "pct": 28 }
+      ],
+      "good": "분노의 반격러",
+      "bad": "쿨 내려놓기 달인"
+    },
+    "revenge_deflect": {
+      "emoji": "📝",
+      "name": "흑역사 기록자",
+      "sub": "Grudge Keeper Supreme",
+      "color": "#f72585",
+      "desc": "망신당한 순간을 절대 잊지 않고 마음 속 수첩에 꼼꼼히 기록해두는 타입. 당장은 참지만 언젠가 반드시 만회하겠다는 불꽃 같은 다짐이 있어요. 복수는 차갑게, 하지만 우아하게.",
+      "traits": [
+        { "icon": "📝", "name": "기록력", "pct": 95 },
+        { "icon": "🎯", "name": "복수심", "pct": 90 },
+        { "icon": "⏳", "name": "인내심", "pct": 85 },
+        { "icon": "😂", "name": "웃음 넘기기", "pct": 30 }
+      ],
+      "good": "분노의 반격러",
+      "bad": "쿨 내려놓기 달인"
+    }
+  },
+
+  "combos": {
+    "vanish,chill": "vanish_chill",
+    "chill,vanish": "vanish_chill",
+    "vanish,clown": "vanish_chill",
+    "clown,vanish": "vanish_chill",
+    "vanish,rage": "vanish_chill",
+    "rage,vanish": "vanish_chill",
+    "vanish,revenge": "vanish_chill",
+    "revenge,vanish": "vanish_chill",
+    "vanish,deflect": "vanish_chill",
+    "deflect,vanish": "vanish_chill",
+    "clown,deflect": "clown_deflect",
+    "deflect,clown": "clown_deflect",
+    "clown,chill": "clown_deflect",
+    "chill,clown": "clown_deflect",
+    "clown,rage": "clown_deflect",
+    "rage,clown": "clown_deflect",
+    "clown,revenge": "clown_deflect",
+    "revenge,clown": "clown_deflect",
+    "rage,revenge": "rage_revenge",
+    "revenge,rage": "rage_revenge",
+    "rage,deflect": "deflect_rage",
+    "deflect,rage": "deflect_rage",
+    "rage,chill": "rage_revenge",
+    "chill,rage": "rage_revenge",
+    "chill,deflect": "chill_clown",
+    "deflect,chill": "chill_clown",
+    "chill,revenge": "chill_clown",
+    "revenge,chill": "chill_clown",
+    "deflect,revenge": "revenge_deflect",
+    "revenge,deflect": "revenge_deflect",
+    "vanish,vanish": "vanish_chill",
+    "clown,clown": "clown_deflect",
+    "rage,rage": "rage_revenge",
+    "chill,chill": "chill_clown",
+    "deflect,deflect": "deflect_rage",
+    "revenge,revenge": "revenge_deflect",
+    "vanish,clown,rage": "vanish_chill",
+    "clown,rage,deflect": "clown_deflect",
+    "rage,deflect,revenge": "deflect_rage",
+    "chill,clown,deflect": "chill_clown",
+    "revenge,rage,clown": "rage_revenge",
+    "deflect,revenge,chill": "revenge_deflect"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
