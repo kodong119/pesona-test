@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>화났을 때 나는 어떤 유형?</title>
+  <meta property="og:title" content="화났을 때 나는 어떤 유형?" />
+  <meta property="og:description" content="상대방은 이미 다 알고 있다 👀" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "화났을 때 나는 어떤 유형?",
+    "subtitle": "상대방은 이미 다 알고 있다 👀",
+    "badge": "2026 분노 표현 유형 테스트",
+    "emoji": "😤",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/anger-expression-type.html",
+    "resultBadge": "YOUR ANGER TYPE"
+  },
+
+  "scoreKeys": ["silent", "explode", "sarcasm", "coldwave", "crybaby", "busy"],
+
+  "questions": [
+    {
+      "emoji": "😡",
+      "text": "누군가 나를 진심으로 화나게 했을 때, 첫 반응은?",
+      "options": [
+        { "text": "🤐 입 닫고 조용해짐... 무서운 거 맞음", "scores": { "silent": 3, "coldwave": 1 } },
+        { "text": "💥 그 자리에서 바로 말함. 참는 게 더 이상함", "scores": { "explode": 3, "busy": 1 } },
+        { "text": "😏 '아~ 그렇구나~' 하고 톤이 달라짐", "scores": { "sarcasm": 3, "coldwave": 1 } },
+        { "text": "😢 눈물부터 나옴... 화가 슬픔으로 직행", "scores": { "crybaby": 3, "silent": 1 } }
+      ]
+    },
+    {
+      "emoji": "📱",
+      "text": "화났을 때 카톡 답장 스타일은?",
+      "options": [
+        { "text": "🔇 읽씹 or 답장 없음. 말 걸지 마세요", "scores": { "silent": 3, "coldwave": 1 } },
+        { "text": "💬 길고 긴 문자 폭탄... 하고싶은 말 다 씀", "scores": { "explode": 3, "crybaby": 1 } },
+        { "text": "🙂 '응' '어' 한 글자 답장으로 분위기 전달", "scores": { "coldwave": 3, "sarcasm": 1 } },
+        { "text": "😭 '괜찮아' 보내고 혼자 울고 있음", "scores": { "crybaby": 3, "silent": 1 } }
+      ]
+    },
+    {
+      "emoji": "🫂",
+      "text": "친한 친구가 '야 너 화났어?' 물어보면?",
+      "options": [
+        { "text": "😶 '아니'라고 하고 더 조용해짐", "scores": { "silent": 3, "coldwave": 1 } },
+        { "text": "🗣️ '당연하지!! 너 그거 알아?!' 하고 터짐", "scores": { "explode": 3, "busy": 1 } },
+        { "text": "😌 '화? 전혀? 근데 그거 좀 이상하지 않았어?'", "scores": { "sarcasm": 3, "coldwave": 1 } },
+        { "text": "😭 그 말 한마디에 눈물 터짐", "scores": { "crybaby": 3, "silent": 1 } }
+      ]
+    },
+    {
+      "emoji": "🏃",
+      "text": "화가 나면 몸이 먼저 반응하는 편?",
+      "options": [
+        { "text": "🚶 그 자리를 피해 혼자 있으려 함", "scores": { "silent": 2, "coldwave": 2 } },
+        { "text": "🔥 목소리 커지고 말이 빨라짐", "scores": { "explode": 3, "busy": 1 } },
+        { "text": "🥶 표정이 싹 굳고 말투가 건조해짐", "scores": { "coldwave": 3, "sarcasm": 1 } },
+        { "text": "😤 갑자기 청소 or 뭔가를 엄청 열심히 함", "scores": { "busy": 3, "silent": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌙",
+      "text": "화나는 일이 있었던 날 밤, 나는?",
+      "options": [
+        { "text": "🛏️ 이불 뒤집어쓰고 혼자 곱씹음... 잠 못 잠", "scores": { "silent": 2, "crybaby": 2 } },
+        { "text": "📞 친구한테 전화해서 전부 다 털어놓음", "scores": { "explode": 2, "busy": 2 } },
+        { "text": "📝 일기장에 그 사람 욕 빼곡히 적음", "scores": { "sarcasm": 2, "coldwave": 2 } },
+        { "text": "🏋️ 새벽에 운동 or 갑자기 방 정리함", "scores": { "busy": 3, "explode": 1 } }
+      ]
+    },
+    {
+      "emoji": "🙅",
+      "text": "화난 걸 들키고 싶지 않을 때 나의 전략은?",
+      "options": [
+        { "text": "🫥 평소보다 더 말 없이 지냄", "scores": { "silent": 3, "coldwave": 1 } },
+        { "text": "😅 억지 웃음... 근데 눈은 안 웃고 있음", "scores": { "sarcasm": 3, "coldwave": 1 } },
+        { "text": "📲 SNS에 의미심장한 글 올림", "scores": { "crybaby": 2, "sarcasm": 2 } },
+        { "text": "💼 '바빠서요~' 하고 일/공부에 박힘", "scores": { "busy": 3, "silent": 1 } }
+      ]
+    },
+    {
+      "emoji": "💬",
+      "text": "화가 어느 정도 풀렸을 때 상대에게 하는 행동은?",
+      "options": [
+        { "text": "🫶 먼저 말 걸어주길 기다림... 근데 티는 안 냄", "scores": { "silent": 2, "coldwave": 2 } },
+        { "text": "🤝 '야 아까 그거 말이야...' 하고 직접 얘기함", "scores": { "explode": 3, "busy": 1 } },
+        { "text": "😌 아무 일 없었다는 듯 먼저 툭 말 걸기", "scores": { "coldwave": 2, "sarcasm": 2 } },
+        { "text": "😢 '나 좀 속상했어...' 하고 솔직하게 털어놓음", "scores": { "crybaby": 3, "explode": 1 } }
+      ]
+    },
+    {
+      "emoji": "🤔",
+      "text": "내가 화났다는 걸 상대가 어떻게 눈치채는 것 같아?",
+      "options": [
+        { "text": "🔕 갑자기 말수가 줄어들고 대답이 짧아짐", "scores": { "silent": 3, "coldwave": 1 } },
+        { "text": "🌋 목소리 톤이랑 말 빠르기로 알아챔", "scores": { "explode": 3, "busy": 1 } },
+        { "text": "🧊 표정이 없어지고 대화가 사무적이 됨", "scores": { "coldwave": 3, "sarcasm": 1 } },
+        { "text": "🥹 눈가가 촉촉해지거나 목소리가 떨림", "scores": { "crybaby": 3, "silent": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "silent_coldwave": {
+      "emoji": "🔇",
+      "name": "침묵의 빙하",
+      "sub": "The Silent Glacier",
+      "color": "#90e0ef",
+      "desc": "화나면 말이 없어지는 타입. 딱히 티를 안 내려고 하는데 오히려 그게 더 무서움. 상대방이 알아서 눈치 채길 바라며 조용히 얼어붙는 스타일이에요.",
+      "traits": [
+        { "icon": "🤐", "name": "침묵력", "pct": 95 },
+        { "icon": "🧊", "name": "냉각속도", "pct": 88 },
+        { "icon": "👀", "name": "눈치유발", "pct": 82 },
+        { "icon": "💥", "name": "직접표현", "pct": 22 }
+      ],
+      "good": "감정 폭발러",
+      "bad": "갑자기 바빠진 사람"
+    },
+    "explode_busy": {
+      "emoji": "🌋",
+      "name": "감정 폭발러",
+      "sub": "The Volcano Expresser",
+      "color": "#ff6b6b",
+      "desc": "화나면 그냥 바로 말함. 참는 게 더 이상한 거 아님? 직접적이고 솔직한 표현 덕분에 갈등이 빨리 해결되기도 하지만 가끔 주변이 좀 놀람. 나쁜 뜻은 없어요 진짜로.",
+      "traits": [
+        { "icon": "💥", "name": "직접표현", "pct": 95 },
+        { "icon": "🔥", "name": "폭발속도", "pct": 90 },
+        { "icon": "🗣️", "name": "언어화력", "pct": 85 },
+        { "icon": "🤐", "name": "참을성", "pct": 25 }
+      ],
+      "good": "침묵의 빙하",
+      "bad": "눈물 한 방울"
+    },
+    "sarcasm_coldwave": {
+      "emoji": "😏",
+      "name": "정중한 비수",
+      "sub": "The Polite Dagger",
+      "color": "#a29bfe",
+      "desc": "겉으로는 평온한데 말 한마디 한마디에 날이 서 있음. '아~ 그렇구나~'의 그 톤을 들은 사람은 다 알아챔. 직접 화내는 것보다 더 무서운 스타일이에요.",
+      "traits": [
+        { "icon": "😏", "name": "빈정력", "pct": 95 },
+        { "icon": "🥶", "name": "냉정함", "pct": 88 },
+        { "icon": "✂️", "name": "말의 날카로움", "pct": 85 },
+        { "icon": "😭", "name": "눈물빈도", "pct": 20 }
+      ],
+      "good": "갑자기 바빠진 사람",
+      "bad": "감정 폭발러"
+    },
+    "crybaby_silent": {
+      "emoji": "🥹",
+      "name": "눈물 한 방울",
+      "sub": "The Tearful Soul",
+      "color": "#74b9ff",
+      "desc": "화가 나면 슬픔이 먼저 옴. 억울하고 속상한 감정이 눈물로 직행하는 타입. 울면서도 '나 괜찮아'를 외치지만 아무도 믿지 않음.",
+      "traits": [
+        { "icon": "😢", "name": "감수성", "pct": 95 },
+        { "icon": "🥺", "name": "억울함", "pct": 88 },
+        { "icon": "💧", "name": "눈물속도", "pct": 90 },
+        { "icon": "💥", "name": "폭발력", "pct": 28 }
+      ],
+      "good": "침묵의 빙하",
+      "bad": "정중한 비수"
+    },
+    "coldwave_sarcasm": {
+      "emoji": "🧊",
+      "name": "차가운 무관심",
+      "sub": "The Arctic Indifference",
+      "color": "#00cec9",
+      "desc": "화나면 감정 자체를 꺼버림. 표정도 없고 말도 사무적이 되는데 이게 제일 무서운 모드. 상대방이 먼저 '내가 뭔가 잘못했나?' 느끼게 만드는 달인이에요.",
+      "traits": [
+        { "icon": "🥶", "name": "냉각력", "pct": 95 },
+        { "icon": "😶", "name": "무표정력", "pct": 92 },
+        { "icon": "🧊", "name": "감정차단", "pct": 88 },
+        { "icon": "🔥", "name": "열정표현", "pct": 22 }
+      ],
+      "good": "정중한 비수",
+      "bad": "감정 폭발러"
+    },
+    "busy_explode": {
+      "emoji": "💼",
+      "name": "갑자기 바빠진 사람",
+      "sub": "The Suddenly Busy One",
+      "color": "#fdcb6e",
+      "desc": "화나면 갑자기 청소, 공부, 운동 등 뭔가를 엄청 열심히 함. 직접 표현은 못 하지만 그 에너지가 어딘가로 폭발하는 타입. 주변 사람들은 '쟤 또 화났나보다'로 바로 알아챔.",
+      "traits": [
+        { "icon": "💼", "name": "회피성 생산력", "pct": 95 },
+        { "icon": "🏃", "name": "도피 속도", "pct": 88 },
+        { "icon": "🔥", "name": "간접표출력", "pct": 85 },
+        { "icon": "💬", "name": "직접표현", "pct": 30 }
+      ],
+      "good": "눈물 한 방울",
+      "bad": "침묵의 빙하"
+    }
+  },
+
+  "combos": {
+    "silent,coldwave": "silent_coldwave",
+    "coldwave,silent": "silent_coldwave",
+    "silent,sarcasm": "silent_coldwave",
+    "sarcasm,silent": "silent_coldwave",
+    "silent,crybaby": "crybaby_silent",
+    "crybaby,silent": "crybaby_silent",
+    "silent,busy": "silent_coldwave",
+    "busy,silent": "silent_coldwave",
+    "silent,explode": "explode_busy",
+    "explode,silent": "explode_busy",
+    "explode,busy": "explode_busy",
+    "busy,explode": "explode_busy",
+    "explode,sarcasm": "explode_busy",
+    "sarcasm,explode": "explode_busy",
+    "explode,coldwave": "explode_busy",
+    "coldwave,explode": "explode_busy",
+    "explode,crybaby": "explode_busy",
+    "crybaby,explode": "crybaby_silent",
+    "sarcasm,coldwave": "sarcasm_coldwave",
+    "coldwave,sarcasm": "coldwave_sarcasm",
+    "sarcasm,crybaby": "sarcasm_coldwave",
+    "crybaby,sarcasm": "crybaby_silent",
+    "sarcasm,busy": "sarcasm_coldwave",
+    "busy,sarcasm": "busy_explode",
+    "crybaby,coldwave": "crybaby_silent",
+    "coldwave,crybaby": "coldwave_sarcasm",
+    "crybaby,busy": "crybaby_silent",
+    "busy,crybaby": "busy_explode",
+    "coldwave,busy": "coldwave_sarcasm",
+    "busy,coldwave": "busy_explode",
+    "silent,silent": "silent_coldwave",
+    "explode,explode": "explode_busy",
+    "sarcasm,sarcasm": "sarcasm_coldwave",
+    "crybaby,crybaby": "crybaby_silent",
+    "coldwave,coldwave": "coldwave_sarcasm",
+    "busy,busy": "busy_explode",
+    "silent,crybaby": "crybaby_silent",
+    "crybaby,silent": "crybaby_silent",
+    "sarcasm,coldwave": "sarcasm_coldwave",
+    "coldwave,sarcasm": "coldwave_sarcasm",
+    "busy,explode": "busy_explode",
+    "explode,busy": "explode_busy"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
