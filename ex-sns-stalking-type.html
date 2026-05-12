@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>전 애인 SNS 보는 나의 방식은?</title>
+  <meta property="og:title" content="전 애인 SNS 보는 나의 방식은?" />
+  <meta property="og:description" content="당신의 미련 온도는 몇 도? 🔍" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "전 애인 SNS 보는 나의 방식은?",
+    "subtitle": "당신의 미련 온도는 몇 도? 🔍",
+    "badge": "2026 전애인 SNS 심리테스트",
+    "emoji": "📱",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/ex-sns-stalking-type.html",
+    "resultBadge": "YOUR EX SNS TYPE"
+  },
+
+  "scoreKeys": ["obsessed", "cold", "nostalgic", "petty", "healed", "curious"],
+
+  "questions": [
+    {
+      "emoji": "📲",
+      "text": "전 애인 SNS를 마지막으로 본 게 언제야?",
+      "options": [
+        { "text": "👀 오늘도 봤는데요?", "scores": { "obsessed": 3, "curious": 1 } },
+        { "text": "🤷 기억도 안 남. 차단했거든", "scores": { "cold": 3, "healed": 1 } },
+        { "text": "😅 가끔... 생각날 때만", "scores": { "nostalgic": 3, "curious": 1 } },
+        { "text": "😤 안 보려고 노력 중 (근데 가끔 실패)", "scores": { "petty": 2, "obsessed": 2 } }
+      ]
+    },
+    {
+      "emoji": "🔔",
+      "text": "전 애인이 새 게시물을 올렸어. 네 반응은?",
+      "options": [
+        { "text": "🏃 1초도 안 돼서 클릭", "scores": { "obsessed": 3, "curious": 1 } },
+        { "text": "😤 알림 뜨면 일부러 안 봄", "scores": { "petty": 3, "cold": 1 } },
+        { "text": "😌 시간 지나면 한 번쯤 봄", "scores": { "nostalgic": 2, "curious": 2 } },
+        { "text": "🥱 관심 없음. 내 피드나 봐", "scores": { "healed": 3, "cold": 1 } }
+      ]
+    },
+    {
+      "emoji": "🖼️",
+      "text": "전 애인 피드에 새로운 이성이 자주 등장해. 어때?",
+      "options": [
+        { "text": "🔍 그 계정까지 들어가서 정보 수집 시작", "scores": { "obsessed": 3, "petty": 1 } },
+        { "text": "😂 어디서 저런 사람을... (비교 시작)", "scores": { "petty": 3, "nostalgic": 1 } },
+        { "text": "😢 괜히 마음이 싸한데...", "scores": { "nostalgic": 3, "obsessed": 1 } },
+        { "text": "😊 잘 됐다. 나도 잘 살아야지", "scores": { "healed": 3, "cold": 1 } }
+      ]
+    },
+    {
+      "emoji": "❤️",
+      "text": "전 애인 게시물에 실수로 좋아요를 눌렀어!",
+      "options": [
+        { "text": "😱 0.1초 안에 취소하고 폰 던짐", "scores": { "obsessed": 3, "petty": 1 } },
+        { "text": "😎 쿨하게 그냥 둠. 내가 뭘 잘못했나", "scores": { "cold": 3, "healed": 1 } },
+        { "text": "😭 오늘 하루 망했다... 잠 못 잠", "scores": { "nostalgic": 2, "obsessed": 2 } },
+        { "text": "😤 오히려 좋아. 잘 살고 있다는 거 어필", "scores": { "petty": 3, "curious": 1 } }
+      ]
+    },
+    {
+      "emoji": "🕵️",
+      "text": "전 애인 SNS를 볼 때 주로 어떻게 봐?",
+      "options": [
+        { "text": "🔒 부계정으로 몰래몰래...", "scores": { "obsessed": 3, "curious": 1 } },
+        { "text": "😌 팔로우 유지한 채로 스크롤하다 마주침", "scores": { "curious": 3, "nostalgic": 1 } },
+        { "text": "🚫 차단 & 팔로우 끊기로 원천봉쇄", "scores": { "cold": 3, "healed": 1 } },
+        { "text": "😤 친구한테 대신 봐달라고 부탁", "scores": { "petty": 2, "obsessed": 2 } }
+      ]
+    },
+    {
+      "emoji": "📸",
+      "text": "전 애인이 나와 찍은 사진을 아직도 올려두고 있어. 어떻게 해?",
+        "options": [
+        { "text": "🥹 괜히 설레... 아직 미련 있나봐", "scores": { "nostalgic": 3, "obsessed": 1 } },
+        { "text": "😤 왜 안 지우는 거야! (근데 내려오길 바람)", "scores": { "petty": 3, "obsessed": 1 } },
+        { "text": "🤔 지울 때 되면 지우겠지 뭐", "scores": { "healed": 2, "curious": 2 } },
+        { "text": "😶 어차피 내 기억 속에 없는 사람", "scores": { "cold": 3, "healed": 1 } }
+      ]
+    },
+    {
+      "emoji": "💬",
+      "text": "전 애인이 스토리를 올렸는데 네 이름이 나왔어. 어떻게 해석해?",
+      "options": [
+        { "text": "💓 나한테 보내는 신호 아닐까? (확인 50번)", "scores": { "obsessed": 3, "nostalgic": 1 } },
+        { "text": "😏 나 생각하는 거 맞지? (흐뭇)", "scores": { "petty": 2, "curious": 2 } },
+        { "text": "🙂 동명이인일 수도 있잖아... 신경 끄자", "scores": { "healed": 3, "cold": 1 } },
+        { "text": "😮 오 신기하다~ 근데 그냥 지나침", "scores": { "curious": 3, "healed": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌙",
+      "text": "자기 전에 전 애인 SNS를 또 열었어. 솔직히 왜 봄?",
+      "options": [
+        { "text": "😔 그냥... 잘 지내나 싶어서", "scores": { "nostalgic": 3, "curious": 1 } },
+        { "text": "😤 잘 못 살고 있길 바라면서", "scores": { "petty": 3, "obsessed": 1 } },
+        { "text": "🤷 손가락이 자동으로 움직였어", "scores": { "obsessed": 3, "curious": 1 } },
+        { "text": "😎 안 봄. 잘 자고 있음 굿나잇", "scores": { "cold": 3, "healed": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "obsessed_curious": {
+      "emoji": "🔍",
+      "name": "전문 정보요원",
+      "sub": "Ex SNS Intelligence Agent",
+      "color": "#ff6b9d",
+      "desc": "전 애인 SNS는 매일 체크하는 필수 앱... 팔로워 수 변화, 새 태그, 위치 정보까지 놓치는 게 없는 당신. 이 에너지로 주식 공부했으면 부자 됐을 텐데요? 스스로도 알잖아요, 이제 그만 볼 때 됐다는 거.",
+      "traits": [
+        { "icon": "🔍", "name": "정보수집력", "pct": 95 },
+        { "icon": "😤", "name": "미련지수", "pct": 88 },
+        { "icon": "💻", "name": "SNS 숙련도", "pct": 90 },
+        { "icon": "😌", "name": "마음의 평화", "pct": 22 }
+      ],
+      "good": "추억 낭만파",
+      "bad": "완전 쿨한 척"
+    },
+    "cold_healed": {
+      "emoji": "🧊",
+      "name": "완전 쿨한 척",
+      "sub": "Ice Cold Ex Detoxer",
+      "color": "#00d4aa",
+      "desc": "차단, 언팔, 기억 삭제까지 완료! 겉으로는 완벽하게 정리된 것처럼 보이는 당신. 근데 솔직히 가끔 친구한테 '걔 요즘 어때?' 물어보는 거 우리 다 알고 있어요. 진짜 쿨한 건 물어보지도 않는 거거든요.",
+      "traits": [
+        { "icon": "🧊", "name": "겉쿨내지수", "pct": 95 },
+        { "icon": "🚫", "name": "차단 속도", "pct": 92 },
+        { "icon": "😌", "name": "자기 방어력", "pct": 85 },
+        { "icon": "🥹", "name": "속마음 온도", "pct": 40 }
+      ],
+      "good": "진짜 홀가분러",
+      "bad": "전문 정보요원"
+    },
+    "nostalgic_curious": {
+      "emoji": "🥹",
+      "name": "추억 낭만파",
+      "sub": "Nostalgic Memory Keeper",
+      "color": "#c77dff",
+      "desc": "전 애인 SNS를 보면서 추억 속 장면들이 스쳐 지나가는 당신. 미워하기도 싫고 완전히 잊기도 애매한, 그 감정의 중간 어딘가에 머물고 있어요. 괜찮아요, 사람 마음이 원래 그렇게 쉽게 정리되진 않으니까.",
+      "traits": [
+        { "icon": "🥹", "name": "감성 지수", "pct": 93 },
+        { "icon": "💭", "name": "추억 보관력", "pct": 90 },
+        { "icon": "🌸", "name": "여린 마음", "pct": 87 },
+        { "icon": "⚡", "name": "현실 복귀력", "pct": 35 }
+      ],
+      "good": "전문 정보요원",
+      "bad": "진짜 홀가분러"
+    },
+    "petty_obsessed": {
+      "emoji": "😤",
+      "name": "분노의 관전러",
+      "sub": "Petty Revenge Watcher",
+      "color": "#ff9e7c",
+      "desc": "잘 살고 있으면 괜히 배 아프고, 못 살고 있으면 쾌감이 오는... 그 복잡한 감정의 주인공이 바로 당신. 복수심과 미련 사이 어딘가에서 오늘도 새로고침 중이에요. 이 에너지 반만 나한테 써도 인생 달라져요.",
+      "traits": [
+        { "icon": "😤", "name": "배아픔 지수", "pct": 92 },
+        { "icon": "🔥", "name": "승부욕", "pct": 88 },
+        { "icon": "👀", "name": "감시력", "pct": 85 },
+        { "icon": "😌", "name": "여유로움", "pct": 20 }
+      ],
+      "good": "추억 낭만파",
+      "bad": "진짜 홀가분러"
+    },
+    "healed_cold": {
+      "emoji": "🌱",
+      "name": "진짜 홀가분러",
+      "sub": "Truly Healed & Free",
+      "color": "#7c5cfc",
+      "desc": "전 애인 SNS? 가끔 알고리즘에 떠도 '아 살아있구나' 하고 넘기는 당신. 과거보다 지금 내 일상이 훨씬 재밌거든요. 주변 사람들이 가장 부러워하는 타입이에요, 어떻게 그렇게 됐는지 비결 좀 알려줘요.",
+      "traits": [
+        { "icon": "🌱", "name": "회복력", "pct": 95 },
+        { "icon": "😊", "name": "현재 집중력", "pct": 90 },
+        { "icon": "🧘", "name": "마음 평온도", "pct": 92 },
+        { "icon": "👀", "name": "미련 지수", "pct": 15 }
+      ],
+      "good": "완전 쿨한 척",
+      "bad": "전문 정보요원"
+    },
+    "petty_curious": {
+      "emoji": "😏",
+      "name": "쿨한 척 관종",
+      "sub": "Secretly Invested Observer",
+      "color": "#ffd166",
+      "desc": "안 궁금한 척하지만 사실 제일 열심히 보는 게 당신이에요. 좋아요는 절대 안 누르지만 스크린샷은 찍어두는 타입. 미련인지 호기심인지 본인도 모르겠지만, 어쨌든 오늘도 그 계정 들어갔잖아요.",
+      "traits": [
+        { "icon": "😏", "name": "쿨한 척 지수", "pct": 90 },
+        { "icon": "🔍", "name": "몰래 관심력", "pct": 88 },
+        { "icon": "📸", "name": "증거 수집력", "pct": 82 },
+        { "icon": "😌", "name": "진짜 쿨함", "pct": 28 }
+      ],
+      "good": "분노의 관전러",
+      "bad": "진짜 홀가분러"
+    }
+  },
+
+  "combos": {
+    "obsessed,curious": "obsessed_curious",
+    "curious,obsessed": "obsessed_curious",
+    "cold,healed": "cold_healed",
+    "healed,cold": "cold_healed",
+    "nostalgic,curious": "nostalgic_curious",
+    "curious,nostalgic": "nostalgic_curious",
+    "petty,obsessed": "petty_obsessed",
+    "obsessed,petty": "petty_obsessed",
+    "healed,nostalgic": "healed_cold",
+    "nostalgic,healed": "healed_cold",
+    "petty,curious": "petty_curious",
+    "curious,petty": "petty_curious",
+    "obsessed,nostalgic": "obsessed_curious",
+    "nostalgic,obsessed": "obsessed_curious",
+    "obsessed,cold": "petty_obsessed",
+    "cold,obsessed": "cold_healed",
+    "obsessed,healed": "nostalgic_curious",
+    "healed,obsessed": "healed_cold",
+    "obsessed,petty": "petty_obsessed",
+    "cold,curious": "cold_healed",
+    "curious,cold": "petty_curious",
+    "cold,nostalgic": "cold_healed",
+    "nostalgic,cold": "nostalgic_curious",
+    "cold,petty": "cold_healed",
+    "petty,cold": "petty_curious",
+    "nostalgic,petty": "petty_obsessed",
+    "petty,nostalgic": "petty_curious",
+    "healed,curious": "healed_cold",
+    "curious,healed": "nostalgic_curious",
+    "healed,petty": "healed_cold",
+    "petty,healed": "petty_curious",
+    "curious,cold": "petty_curious",
+    "curious,healed": "nostalgic_curious",
+    "obsessed,obsessed": "obsessed_curious",
+    "cold,cold": "cold_healed",
+    "nostalgic,nostalgic": "nostalgic_curious",
+    "petty,petty": "petty_obsessed",
+    "healed,healed": "healed_cold",
+    "curious,curious": "nostalgic_curious",
+    "obsessed,cold": "petty_obsessed",
+    "nostalgic,cold": "nostalgic_curious",
+    "petty,obsessed": "petty_obsessed",
+    "healed,curious": "healed_cold"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
