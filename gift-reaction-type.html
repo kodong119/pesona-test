@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>나는 선물 받으면 어떻게 리액션 연기하는 타입?</title>
+  <meta property="og:title" content="나는 선물 받으면 어떻게 리액션 연기하는 타입?" />
+  <meta property="og:description" content="겉 미소 속 현실... 당신의 선물 리액션 유형 🎁" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "나는 선물 받으면 어떻게 리액션 연기하는 타입?",
+    "subtitle": "겉 미소 속 현실... 당신의 선물 리액션 유형 🎁",
+    "badge": "2026 선물 리액션 테스트",
+    "emoji": "🎁",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/gift-reaction-type.html",
+    "resultBadge": "YOUR GIFT REACTION TYPE"
+  },
+
+  "scoreKeys": ["actor", "honest", "emotional", "awkward", "graceful", "chaotic"],
+
+  "questions": [
+    {
+      "emoji": "🎁",
+      "text": "선물 포장지를 뜯는 순간, 당신의 첫 반응은?",
+      "options": [
+        { "text": "😱 눈 커지고 '어머!' 자동 발사", "scores": { "actor": 3, "emotional": 1 } },
+        { "text": "🙂 '오~ 고마워' 평온하게 받음", "scores": { "honest": 3, "graceful": 1 } },
+        { "text": "😭 진짜 감동받아서 눈물 날 것 같음", "scores": { "emotional": 3, "graceful": 1 } },
+        { "text": "😬 어... 이게 뭐지 (얼굴이 굳음)", "scores": { "awkward": 3, "honest": 1 } }
+      ]
+    },
+    {
+      "emoji": "😬",
+      "text": "사실 좀 별로인 선물을 받았다. 어떻게 해?",
+      "options": [
+        { "text": "🎭 '이거 딱 내 스타일이야!' 명연기 시전", "scores": { "actor": 3, "chaotic": 1 } },
+        { "text": "😶 '아 고마워...' 소리만 내고 조용히 있음", "scores": { "awkward": 3, "honest": 1 } },
+        { "text": "😅 '헤헤 완전 특이하다~' 웃음으로 무마", "scores": { "chaotic": 3, "actor": 1 } },
+        { "text": "💬 '나 이런 거 잘 안 써서...' 솔직하게 말함", "scores": { "honest": 3, "awkward": 1 } }
+      ]
+    },
+    {
+      "emoji": "👀",
+      "text": "선물 준 사람이 내 표정 보고 있다는 걸 알았을 때?",
+      "options": [
+        { "text": "🎬 더 크게 리액션 업그레이드", "scores": { "actor": 3, "emotional": 1 } },
+        { "text": "😐 그냥 내 표정 그대로 유지", "scores": { "honest": 3, "graceful": 1 } },
+        { "text": "🥰 눈 마주치고 진심으로 감사 표현", "scores": { "graceful": 3, "emotional": 1 } },
+        { "text": "👁️ 눈 마주치자마자 더 굳어버림", "scores": { "awkward": 3, "chaotic": 1 } }
+      ]
+    },
+    {
+      "emoji": "📦",
+      "text": "택배로 선물이 왔다! 언제 뜯어?",
+      "options": [
+        { "text": "⚡ 받자마자 현관에서 바로 뜯음", "scores": { "chaotic": 3, "emotional": 1 } },
+        { "text": "🪑 자리 잡고 천천히 의식처럼 뜯음", "scores": { "graceful": 3, "emotional": 1 } },
+        { "text": "📹 영상 찍으면서 감동 리액션 준비", "scores": { "actor": 3, "chaotic": 1 } },
+        { "text": "😴 나중에 뜯어야지~ 하다가 며칠째 방치", "scores": { "honest": 2, "awkward": 2 } }
+      ]
+    },
+    {
+      "emoji": "🙏",
+      "text": "감사 인사는 어떻게 전해?",
+      "options": [
+        { "text": "📱 감사 문자 정성스럽게 길게 씀", "scores": { "graceful": 3, "emotional": 1 } },
+        { "text": "💬 '잘 받았어 ㅋㅋ 고마워' 가볍게 카톡", "scores": { "honest": 3, "chaotic": 1 } },
+        { "text": "🤳 언박싱 영상 찍어서 공유", "scores": { "actor": 3, "chaotic": 1 } },
+        { "text": "😬 뭐라고 써야 할지 몰라서 그냥 이모티콘만", "scores": { "awkward": 3, "honest": 1 } }
+      ]
+    },
+    {
+      "emoji": "🎉",
+      "text": "생일 파티에서 여러 명이 선물을 줬을 때?",
+      "options": [
+        { "text": "🎭 한 명 한 명 맞춤 리액션 장인", "scores": { "actor": 3, "graceful": 1 } },
+        { "text": "😵 너무 많아서 뭔가 점점 리액션이 무뎌짐", "scores": { "chaotic": 3, "awkward": 1 } },
+        { "text": "🥺 진짜 감동받아서 울 것 같아짐", "scores": { "emotional": 3, "graceful": 1 } },
+        { "text": "🫠 모두의 시선 집중... 식은땀 흐름", "scores": { "awkward": 3, "chaotic": 1 } }
+      ]
+    },
+    {
+      "emoji": "💭",
+      "text": "선물 받고 나서 집에 오면 드는 생각은?",
+      "options": [
+        { "text": "😅 '나 리액션 좀 과했나?' 복기함", "scores": { "actor": 3, "chaotic": 1 } },
+        { "text": "🥰 선물 다시 보면서 또 감동받음", "scores": { "emotional": 3, "graceful": 1 } },
+        { "text": "🤔 '이거 어디 쓰지...' 현실적 고민", "scores": { "honest": 3, "awkward": 1 } },
+        { "text": "😶 별 생각 없이 그냥 일상으로 복귀", "scores": { "graceful": 2, "honest": 2 } }
+      ]
+    },
+    {
+      "emoji": "🎀",
+      "text": "선물 리액션 레전드 상황! 친구가 '표정 봐ㅋㅋ' 하면?",
+      "options": [
+        { "text": "😂 '나 연기 천재 아님?ㅋㅋ' 쿨하게 인정", "scores": { "actor": 3, "chaotic": 1 } },
+        { "text": "🫣 '에이 그냥 솔직하게 반응한 거야' 진심임을 주장", "scores": { "honest": 3, "emotional": 1 } },
+        { "text": "😭 '아니 진짜 감동이었는데?!' 억울함 폭발", "scores": { "emotional": 3, "chaotic": 1 } },
+        { "text": "🫠 '내가 그랬어...?' 자신도 몰랐음 (멘붕)", "scores": { "awkward": 2, "chaotic": 2 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "actor_chaotic": {
+      "emoji": "🎭",
+      "name": "리액션 장인",
+      "sub": "The Reaction Master",
+      "color": "#ff6b9d",
+      "desc": "선물 뜯는 순간부터 이미 내면의 배우가 깨어나는 타입. '이거 딱 내 스타일이야!'는 기본이고 눈물까지 짜낼 기세. 본인도 어디까지가 연기고 진심인지 모를 때가 있는 선물 리액션 아카데미 수석 졸업생이에요.",
+      "traits": [
+        { "icon": "🎬", "name": "연기력", "pct": 95 },
+        { "icon": "😄", "name": "리액션", "pct": 92 },
+        { "icon": "🎭", "name": "순발력", "pct": 88 },
+        { "icon": "😶", "name": "포커페이스", "pct": 20 }
+      ],
+      "good": "감동 폭발러",
+      "bad": "솔직 무뚝뚝러"
+    },
+    "honest_awkward": {
+      "emoji": "😐",
+      "name": "솔직 무뚝뚝러",
+      "sub": "The Honest Reacter",
+      "color": "#00d4aa",
+      "desc": "리액션 꾸미는 게 더 어색한 현실주의자. '고마워'에 모든 감사가 담겨있다고 생각하지만 상대방은 좀 불안할 수도. 거짓말은 못 하는 진심 100% 타입이라 오히려 신뢰감 뿜뿜이에요.",
+      "traits": [
+        { "icon": "💯", "name": "솔직함", "pct": 95 },
+        { "icon": "🧊", "name": "냉정함", "pct": 85 },
+        { "icon": "🫶", "name": "진심력", "pct": 80 },
+        { "icon": "🎭", "name": "연기력", "pct": 22 }
+      ],
+      "good": "우아한 감사러",
+      "bad": "리액션 장인"
+    },
+    "emotional_graceful": {
+      "emoji": "🥺",
+      "name": "감동 폭발러",
+      "sub": "The Emotional Receiver",
+      "color": "#c77dff",
+      "desc": "선물 받는 순간 진짜로 눈물이 차오르는 감수성 만렙 타입. 연기 같아 보여도 이게 다 진짜라서 더 무서운 사람. 선물 준 사람이 오히려 감동받아서 돌아가는 기적을 만들어내는 분위기 메이커예요.",
+      "traits": [
+        { "icon": "🥺", "name": "감수성", "pct": 95 },
+        { "icon": "💕", "name": "진심력", "pct": 92 },
+        { "icon": "🌊", "name": "감동력", "pct": 90 },
+        { "icon": "😐", "name": "무덤덤함", "pct": 20 }
+      ],
+      "good": "리액션 장인",
+      "bad": "솔직 무뚝뚝러"
+    },
+    "awkward_chaotic": {
+      "emoji": "🫠",
+      "name": "리액션 버퍼링",
+      "sub": "The Awkward Processor",
+      "color": "#ff9e7c",
+      "desc": "선물 받는 순간 뇌가 로딩 중... 뭔가 하려는데 몸이 안 따라주는 타입. 굳어버린 표정이 오히려 밈이 될 뻔한 상황을 매번 겪는 당신. 마음속으로는 너무 고마운데 그게 왜 밖으로 안 나오는지가 평생의 숙제예요.",
+      "traits": [
+        { "icon": "🫠", "name": "당황력", "pct": 95 },
+        { "icon": "💭", "name": "내면 감동", "pct": 88 },
+        { "icon": "🐢", "name": "반응 속도", "pct": 30 },
+        { "icon": "🎭", "name": "연기력", "pct": 25 }
+      ],
+      "good": "솔직 무뚝뚝러",
+      "bad": "리액션 장인"
+    },
+    "graceful_emotional": {
+      "emoji": "🌸",
+      "name": "우아한 감사러",
+      "sub": "The Graceful Thanker",
+      "color": "#ffd166",
+      "desc": "과하지도 부족하지도 않은 딱 적당한 리액션의 교과서. 눈 마주치고 따뜻하게 웃으면서 '진짜 고마워'라고 말하는 것만으로 상대방 심장이 녹아버려요. 연기 없이도 분위기를 완성하는 자연산 매력 소유자예요.",
+      "traits": [
+        { "icon": "🌸", "name": "우아함", "pct": 95 },
+        { "icon": "💛", "name": "따뜻함", "pct": 90 },
+        { "icon": "🎯", "name": "적절함", "pct": 88 },
+        { "icon": "😵", "name": "오버력", "pct": 22 }
+      ],
+      "good": "감동 폭발러",
+      "bad": "리액션 버퍼링"
+    },
+    "chaotic_actor": {
+      "emoji": "🤪",
+      "name": "즉흥 카오스러",
+      "sub": "The Chaotic Improv Star",
+      "color": "#7c5cfc",
+      "desc": "리액션 계획 같은 건 없고 그냥 그 순간 느끼는 대로 폭발하는 타입. 웃다가 울다가 '이게 뭐야ㅋㅋ' 하다가 감동받는 예측 불가 루트. 선물 자리가 끝나고 나면 모두가 당신 리액션 이야기를 하고 있어요.",
+      "traits": [
+        { "icon": "🤪", "name": "즉흥력", "pct": 95 },
+        { "icon": "🎢", "name": "감정기복", "pct": 90 },
+        { "icon": "😂", "name": "유쾌함", "pct": 88 },
+        { "icon": "🧘", "name": "차분함", "pct": 20 }
+      ],
+      "good": "리액션 장인",
+      "bad": "우아한 감사러"
+    }
+  },
+
+  "combos": {
+    "actor,chaotic": "actor_chaotic",
+    "chaotic,actor": "actor_chaotic",
+    "honest,awkward": "honest_awkward",
+    "awkward,honest": "honest_awkward",
+    "emotional,graceful": "emotional_graceful",
+    "graceful,emotional": "emotional_graceful",
+    "awkward,chaotic": "awkward_chaotic",
+    "chaotic,awkward": "awkward_chaotic",
+    "graceful,emotional": "graceful_emotional",
+    "emotional,graceful": "graceful_emotional",
+    "chaotic,actor": "chaotic_actor",
+    "actor,chaotic": "chaotic_actor",
+    "actor,honest": "actor_chaotic",
+    "honest,actor": "actor_chaotic",
+    "actor,emotional": "actor_chaotic",
+    "emotional,actor": "actor_chaotic",
+    "actor,awkward": "actor_chaotic",
+    "awkward,actor": "actor_chaotic",
+    "actor,graceful": "graceful_emotional",
+    "graceful,actor": "graceful_emotional",
+    "honest,emotional": "honest_awkward",
+    "emotional,honest": "honest_awkward",
+    "honest,graceful": "graceful_emotional",
+    "graceful,honest": "graceful_emotional",
+    "honest,chaotic": "chaotic_actor",
+    "chaotic,honest": "chaotic_actor",
+    "emotional,awkward": "emotional_graceful",
+    "awkward,emotional": "emotional_graceful",
+    "emotional,chaotic": "chaotic_actor",
+    "chaotic,emotional": "chaotic_actor",
+    "graceful,awkward": "graceful_emotional",
+    "awkward,graceful": "graceful_emotional",
+    "graceful,chaotic": "graceful_emotional",
+    "chaotic,graceful": "chaotic_actor",
+    "awkward,honest": "honest_awkward",
+    "honest,awkward": "honest_awkward",
+    "actor,actor": "actor_chaotic",
+    "honest,honest": "honest_awkward",
+    "emotional,emotional": "emotional_graceful",
+    "awkward,awkward": "awkward_chaotic",
+    "graceful,graceful": "graceful_emotional",
+    "chaotic,chaotic": "chaotic_actor"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
