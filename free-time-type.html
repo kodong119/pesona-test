@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>나는 갑자기 생긴 빈 시간을 어떻게 날려먹는 타입?</title>
+  <meta property="og:title" content="나는 갑자기 생긴 빈 시간을 어떻게 날려먹는 타입?" />
+  <meta property="og:description" content="예상치 못한 자유 시간, 나는 어떻게 쓰고 있을까? ⏳" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "나는 갑자기 생긴 빈 시간을 어떻게 날려먹는 타입?",
+    "subtitle": "예상치 못한 자유 시간, 나는 어떻게 쓰고 있을까? ⏳",
+    "badge": "2026 빈 시간 소비 유형 테스트",
+    "emoji": "⏳",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/free-time-type.html",
+    "resultBadge": "YOUR FREE TIME PERSONA"
+  },
+
+  "scoreKeys": ["scroll", "nap", "creative", "social", "productive", "outdoor", "foodie"],
+
+  "questions": [
+    {
+      "emoji": "📲",
+      "text": "약속이 갑자기 취소됐다! 가장 먼저 드는 생각은?",
+      "options": [
+        { "text": "😌 오 신이시여... 침대로 직행 예약", "scores": { "nap": 3, "scroll": 1 } },
+        { "text": "📱 유튜브나 릴스 한 편만 보자~", "scores": { "scroll": 3, "nap": 1 } },
+        { "text": "🏃 아 그럼 저 혼자 뭐라도 해볼게요!", "scores": { "productive": 3, "creative": 1 } },
+        { "text": "👥 딴 친구한테 바로 연락! 다른 약속 잡기", "scores": { "social": 3, "outdoor": 1 } }
+      ]
+    },
+    {
+      "emoji": "🛋️",
+      "text": "소파에 누웠는데 폰이 손에 잡혔다. 뭘 켜?",
+      "options": [
+        { "text": "📺 넷플릭스 뭐 볼까... 30분 고르다 끝남", "scores": { "scroll": 3, "nap": 1 } },
+        { "text": "🛒 쇼핑앱 구경 (살 건 없는데 왜 켰지?)", "scores": { "scroll": 2, "foodie": 2 } },
+        { "text": "📚 아 이참에 저장해둔 유튜브 강의 봐야지", "scores": { "productive": 3, "creative": 1 } },
+        { "text": "💬 단톡방 터져있는 거 정주행", "scores": { "social": 3, "scroll": 1 } }
+      ]
+    },
+    {
+      "emoji": "😴",
+      "text": "빈 시간이 생기면 잠이 당기는 편이야?",
+      "options": [
+        { "text": "💤 무조건 눕고 봄. 잠이 보약이지", "scores": { "nap": 3, "scroll": 1 } },
+        { "text": "🧘 눕긴 하는데 폰 보다가 잠 못 잠", "scores": { "scroll": 2, "nap": 2 } },
+        { "text": "🎨 잠은 무슨! 뭔가 만들거나 해야 직성이 풀림", "scores": { "creative": 3, "productive": 1 } },
+        { "text": "🍜 배고픈 게 먼저! 뭐 먹을지 고민부터", "scores": { "foodie": 3, "outdoor": 1 } }
+      ]
+    },
+    {
+      "emoji": "🍽️",
+      "text": "점심 약속이 펑크났다. 점심은 어떻게 해결해?",
+      "options": [
+        { "text": "🛵 배달앱 켜서 신메뉴 탐색 시작", "scores": { "foodie": 3, "scroll": 1 } },
+        { "text": "🚶 혼자 먹어본 적 없는 식당 도전!", "scores": { "outdoor": 3, "foodie": 1 } },
+        { "text": "🍜 냉장고 털어서 대충 해먹음", "scores": { "productive": 2, "nap": 2 } },
+        { "text": "📞 다른 친구한테 연락해서 같이 먹음", "scores": { "social": 3, "foodie": 1 } }
+      ]
+    },
+    {
+      "emoji": "✏️",
+      "text": "뭔가 하고 싶긴 한데 의욕이 없을 때 어떻게 해?",
+      "options": [
+        { "text": "📱 릴스/쇼츠 보다 보면 의욕 생기더라", "scores": { "scroll": 3, "nap": 1 } },
+        { "text": "🎵 플레이리스트 틀고 청소나 정리 시작", "scores": { "productive": 3, "creative": 1 } },
+        { "text": "🖼️ 그림 그리거나 낙서하다 보면 풀림", "scores": { "creative": 3, "productive": 1 } },
+        { "text": "☕ 카페라도 가자! 나가면 뭔가 하게 됨", "scores": { "outdoor": 3, "social": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌤️",
+      "text": "날씨가 완벽하게 좋은 날 갑자기 오후가 비었어. 뭐 해?",
+      "options": [
+        { "text": "🏃 산책이나 러닝 나간다! 몸이 먼저 반응함", "scores": { "outdoor": 3, "productive": 1 } },
+        { "text": "😎 창문 열어놓고 집에서 뒹굴 (최고 아님?)", "scores": { "nap": 3, "scroll": 1 } },
+        { "text": "📸 핫플 가서 사진 찍고 감성 충전", "scores": { "outdoor": 2, "social": 2 } },
+        { "text": "🍔 날 좋을 때 맛있는 거 먹어야지~", "scores": { "foodie": 3, "outdoor": 1 } }
+      ]
+    },
+    {
+      "emoji": "⌛",
+      "text": "2시간 생겼는데 그 시간이 다 지나고 나서 드는 생각은?",
+      "options": [
+        { "text": "😵 어 벌써 끝났네... 뭐 했지 나?", "scores": { "scroll": 3, "nap": 1 } },
+        { "text": "😤 아 이때 운동이라도 할 걸", "scores": { "outdoor": 2, "productive": 2 } },
+        { "text": "😏 알차게 쉬었다~ 후회 없음!", "scores": { "nap": 3, "foodie": 1 } },
+        { "text": "✅ 할 일 하나 해치웠다! 뿌듯", "scores": { "productive": 3, "creative": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌙",
+      "text": "저녁에 갑자기 일정이 사라졌다. 이 밤을 어떻게 보내?",
+      "options": [
+        { "text": "🍿 정주행하던 드라마/영화 몰아보기", "scores": { "scroll": 3, "nap": 1 } },
+        { "text": "🍻 친구 불러서 홈파티 or 야식 약속", "scores": { "social": 3, "foodie": 1 } },
+        { "text": "🎨 미뤄뒀던 창작 활동 (글/그림/음악 등)", "scores": { "creative": 3, "productive": 1 } },
+        { "text": "🛁 씻고 스킨케어하고 일찍 잠", "scores": { "nap": 2, "productive": 2 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "scroll_nap": {
+      "emoji": "📱",
+      "name": "폰 손에 붙은 늘보",
+      "sub": "Infinite Scroll Sloth",
+      "color": "#a78bfa",
+      "desc": "빈 시간 = 폰 + 침대가 공식인 당신! 숏폼 한 편만 보려다 정신 차리면 두 시간이 사라져 있어요. 후회는 하지만 내일도 똑같이 할 거라는 거 우리 둘 다 알고 있죠.",
+      "traits": [
+        { "icon": "📱", "name": "스크롤력", "pct": 95 },
+        { "icon": "😴", "name": "수면력", "pct": 88 },
+        { "icon": "🛋️", "name": "귀차니즘", "pct": 90 },
+        { "icon": "💪", "name": "실행력", "pct": 22 }
+      ],
+      "good": "홈파티 소셜러",
+      "bad": "갑자기 생산러"
+    },
+    "nap_scroll": {
+      "emoji": "😴",
+      "name": "수면 전도사",
+      "sub": "Master Napper",
+      "color": "#60a5fa",
+      "desc": "빈 시간이 생기는 순간 몸이 먼저 침대를 향해요. 자는 게 곧 힐링이고 자는 게 곧 취미인 당신. 30분 낮잠이 어느새 3시간이 돼도 전혀 아깝지 않습니다.",
+      "traits": [
+        { "icon": "💤", "name": "수면력", "pct": 95 },
+        { "icon": "🌿", "name": "회복력", "pct": 90 },
+        { "icon": "😌", "name": "여유력", "pct": 85 },
+        { "icon": "🏃", "name": "활동성", "pct": 20 }
+      ],
+      "good": "폰 손에 붙은 늘보",
+      "bad": "갑자기 아웃도어"
+    },
+    "productive_creative": {
+      "emoji": "✅",
+      "name": "갑자기 생산러",
+      "sub": "Surprise Productivity Machine",
+      "color": "#34d399",
+      "desc": "빈 시간이 생기면 오히려 의욕이 솟구치는 타입! 청소, 정리, 자기계발 강의까지 알차게 채워요. 주변 사람들이 '넌 도대체 언제 쉬어?'라고 물어볼 것 같은 사람입니다.",
+      "traits": [
+        { "icon": "✅", "name": "실행력", "pct": 95 },
+        { "icon": "🧠", "name": "자기관리", "pct": 90 },
+        { "icon": "⚡", "name": "에너지", "pct": 85 },
+        { "icon": "😌", "name": "여유력", "pct": 30 }
+      ],
+      "good": "감성 크리에이터",
+      "bad": "수면 전도사"
+    },
+    "creative_productive": {
+      "emoji": "🎨",
+      "name": "감성 크리에이터",
+      "sub": "Spontaneous Creator",
+      "color": "#f472b6",
+      "desc": "빈 시간은 곧 창작 시간! 글 쓰고, 그림 그리고, 노래 만들고... 미뤄뒀던 것들이 이때 다 쏟아져 나와요. 결과물의 퀄리티는 몰라도 과정이 너무 즐거운 타입이에요.",
+      "traits": [
+        { "icon": "🎨", "name": "창의력", "pct": 95 },
+        { "icon": "✨", "name": "감수성", "pct": 92 },
+        { "icon": "🔥", "name": "몰입력", "pct": 88 },
+        { "icon": "📅", "name": "계획성", "pct": 28 }
+      ],
+      "good": "갑자기 생산러",
+      "bad": "폰 손에 붙은 늘보"
+    },
+    "social_outdoor": {
+      "emoji": "🎉",
+      "name": "홈파티 소셜러",
+      "sub": "Spontaneous Socializer",
+      "color": "#fb923c",
+      "desc": "빈 시간 = 누군가를 부르거나 어딘가로 나갈 기회! 혼자 있는 시간이 낯선 당신은 바로 연락 돌려서 약속 만드는 속도가 국가대표급이에요. 사람이 있어야 에너지가 충전됩니다.",
+      "traits": [
+        { "icon": "💬", "name": "사교력", "pct": 95 },
+        { "icon": "⚡", "name": "실행력", "pct": 88 },
+        { "icon": "🎉", "name": "활발함", "pct": 90 },
+        { "icon": "🧘", "name": "혼자력", "pct": 25 }
+      ],
+      "good": "폰 손에 붙은 늘보",
+      "bad": "수면 전도사"
+    },
+    "outdoor_foodie": {
+      "emoji": "🚶",
+      "name": "갑자기 아웃도어",
+      "sub": "Spontaneous Explorer",
+      "color": "#facc15",
+      "desc": "빈 시간이 생기면 일단 나가야 직성이 풀리는 타입! 산책, 러닝, 먹방 투어까지 몸이 먼저 움직여요. 맛집도 혼자 척척 가고, 새로운 동네 탐험도 두렵지 않은 행동파랍니다.",
+      "traits": [
+        { "icon": "🏃", "name": "활동성", "pct": 95 },
+        { "icon": "🍜", "name": "먹방력", "pct": 88 },
+        { "icon": "🗺️", "name": "탐험심", "pct": 85 },
+        { "icon": "🛋️", "name": "집콕력", "pct": 22 }
+      ],
+      "good": "홈파티 소셜러",
+      "bad": "수면 전도사"
+    }
+  },
+
+  "combos": {
+    "scroll,nap": "scroll_nap",
+    "nap,scroll": "scroll_nap",
+    "scroll,creative": "scroll_nap",
+    "scroll,productive": "scroll_nap",
+    "scroll,social": "scroll_nap",
+    "scroll,outdoor": "scroll_nap",
+    "scroll,foodie": "scroll_nap",
+    "nap,creative": "nap_scroll",
+    "nap,productive": "nap_scroll",
+    "nap,social": "nap_scroll",
+    "nap,outdoor": "nap_scroll",
+    "nap,foodie": "nap_scroll",
+    "productive,creative": "productive_creative",
+    "creative,productive": "creative_productive",
+    "productive,social": "productive_creative",
+    "productive,outdoor": "productive_creative",
+    "productive,foodie": "productive_creative",
+    "productive,scroll": "productive_creative",
+    "productive,nap": "productive_creative",
+    "creative,social": "creative_productive",
+    "creative,outdoor": "creative_productive",
+    "creative,foodie": "creative_productive",
+    "creative,scroll": "creative_productive",
+    "creative,nap": "creative_productive",
+    "social,outdoor": "social_outdoor",
+    "outdoor,social": "social_outdoor",
+    "social,foodie": "social_outdoor",
+    "social,creative": "social_outdoor",
+    "social,productive": "social_outdoor",
+    "social,scroll": "social_outdoor",
+    "social,nap": "social_outdoor",
+    "outdoor,foodie": "outdoor_foodie",
+    "foodie,outdoor": "outdoor_foodie",
+    "outdoor,creative": "outdoor_foodie",
+    "outdoor,productive": "outdoor_foodie",
+    "outdoor,scroll": "outdoor_foodie",
+    "outdoor,nap": "outdoor_foodie",
+    "foodie,creative": "outdoor_foodie",
+    "foodie,productive": "outdoor_foodie",
+    "foodie,scroll": "scroll_nap",
+    "foodie,nap": "nap_scroll",
+    "foodie,social": "social_outdoor"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
