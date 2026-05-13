@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>위기 상황, 나는 누구한테 연락할까?</title>
+  <meta property="og:title" content="위기 상황, 나는 누구한테 연락할까?" />
+  <meta property="og:description" content="급할 때 전화기 드는 그 찰나의 심리 🆘" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "위기 상황, 나는 누구한테 연락할까?",
+    "subtitle": "급할 때 전화기 드는 그 찰나의 심리 🆘",
+    "badge": "2026 위기 연락 유형 테스트",
+    "emoji": "📞",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/crisis-contact-type.html",
+    "resultBadge": "YOUR CRISIS CONTACT TYPE"
+  },
+
+  "scoreKeys": ["bestie", "family", "expert", "solo", "romantic", "network"],
+
+  "questions": [
+    {
+      "emoji": "🚨",
+      "text": "갑자기 지갑을 잃어버렸다! 가장 먼저 드는 생각은?",
+      "options": [
+        { "text": "😭 절친한테 전화해서 일단 하소연부터", "scores": { "bestie": 3, "romantic": 1 } },
+        { "text": "👨‍👩‍👧 부모님한테 연락... 역시 가족이 최고야", "scores": { "family": 3, "solo": 1 } },
+        { "text": "🧠 카드사·경찰서 번호 검색해서 혼자 처리", "scores": { "solo": 3, "expert": 1 } },
+        { "text": "💳 카드 분실 신고는 내가 할게, 현금은 누가 빌려줄 수 있지?", "scores": { "network": 3, "bestie": 1 } }
+      ]
+    },
+    {
+      "emoji": "🏥",
+      "text": "몸이 갑자기 안 좋아서 응급실 가야 할 것 같아. 누구한테 연락해?",
+      "options": [
+        { "text": "❤️ 연인이 제일 먼저 생각남, 바로 전화", "scores": { "romantic": 3, "bestie": 1 } },
+        { "text": "👨‍👩‍👧 엄마 아빠 목소리 듣고 싶다... 가족 전화", "scores": { "family": 3, "romantic": 1 } },
+        { "text": "👯 내 상황 제일 잘 아는 절친한테 SOS", "scores": { "bestie": 3, "network": 1 } },
+        { "text": "🦺 119 먼저 부르고, 나머지는 나중에 연락", "scores": { "solo": 3, "expert": 1 } }
+      ]
+    },
+    {
+      "emoji": "💸",
+      "text": "월세가 갑자기 밀렸다. 정말 급하게 돈이 필요한 상황!",
+      "options": [
+        { "text": "🏠 가족한테 사정 얘기하고 빌리기", "scores": { "family": 3, "solo": 1 } },
+        { "text": "👯 친한 친구한테 솔직하게 말하고 부탁", "scores": { "bestie": 3, "network": 1 } },
+        { "text": "🏦 은행 대출이나 금융 앱 알아보기... 나 혼자 해결", "scores": { "solo": 3, "expert": 2 } },
+        { "text": "📲 인맥 넓게 쳐서 누가 도울 수 있나 알아봄", "scores": { "network": 3, "bestie": 1 } }
+      ]
+    },
+    {
+      "emoji": "😰",
+      "text": "직장에서 엄청난 실수를 저질렀다. 마음이 무너지는 이 순간...",
+      "options": [
+        { "text": "💬 친한 친구한테 카톡 폭탄 날림 (들어줘...)", "scores": { "bestie": 3, "romantic": 1 } },
+        { "text": "❤️ 연인한테 전화해서 목소리 듣고 싶어", "scores": { "romantic": 3, "bestie": 1 } },
+        { "text": "🧘 일단 혼자 진정하고 해결책 찾음", "scores": { "solo": 3, "expert": 1 } },
+        { "text": "👨‍💼 같은 직종 선배나 멘토한테 조언 구함", "scores": { "expert": 3, "network": 1 } }
+      ]
+    },
+    {
+      "emoji": "🔥",
+      "text": "이사한 집에 갑자기 보일러가 고장났어! 겨울인데 어떡하지?",
+      "options": [
+        { "text": "🔧 수리 전문업체 번호 찾아서 바로 연락", "scores": { "expert": 3, "solo": 1 } },
+        { "text": "🏠 집주인한테 연락... 이건 가족 느낌이잖아", "scores": { "family": 2, "expert": 2 } },
+        { "text": "👯 친구야 나 오늘 좀 재워줄 수 있어?", "scores": { "bestie": 3, "network": 1 } },
+        { "text": "❤️ 연인 집에서 신세 좀 지면 되지~", "scores": { "romantic": 3, "bestie": 1 } }
+      ]
+    },
+    {
+      "emoji": "🤯",
+      "text": "갑작스러운 법적 문제에 휘말렸다. 생각지도 못한 상황!",
+      "options": [
+        { "text": "⚖️ 변호사 또는 법률 전문가 먼저 찾음", "scores": { "expert": 3, "solo": 1 } },
+        { "text": "👨‍👩‍👧 가족한테 알리고 같이 대응책 논의", "scores": { "family": 3, "network": 1 } },
+        { "text": "📲 이 쪽 분야 아는 지인 있나 연락망 가동", "scores": { "network": 3, "expert": 1 } },
+        { "text": "💻 일단 혼자 정보 찾고 상황 파악부터", "scores": { "solo": 3, "expert": 1 } }
+      ]
+    },
+    {
+      "emoji": "💔",
+      "text": "갑자기 소중한 사람과 크게 싸워서 멘탈이 나갔어.",
+      "options": [
+        { "text": "👯 절친한테 전화해서 다 털어놓음 (일단 들어줘)", "scores": { "bestie": 3, "romantic": 1 } },
+        { "text": "👨‍👩‍👧 엄마한테 전화해서 울음부터", "scores": { "family": 3, "bestie": 1 } },
+        { "text": "🧘 혼자 산책하거나 일기 쓰면서 정리", "scores": { "solo": 3, "expert": 1 } },
+        { "text": "💌 연인 말고 다른 여러 친구한테 조언 구함", "scores": { "network": 3, "bestie": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌧️",
+      "text": "새벽 3시, 갑자기 이유 없이 너무 힘들고 외롭다. 이 순간 어떻게 해?",
+      "options": [
+        { "text": "📱 연인한테 전화... 자고 있어도 받아줄 거야", "scores": { "romantic": 3, "bestie": 1 } },
+        { "text": "💬 절친한테 '자?' 카톡 한 줄 남김", "scores": { "bestie": 3, "romantic": 1 } },
+        { "text": "🎧 그냥 혼자 음악 듣거나 유튜브 보며 버팀", "scores": { "solo": 3, "expert": 1 } },
+        { "text": "👨‍👩‍👧 가족 단톡방에 '다들 자?' 라고 올림", "scores": { "family": 3, "network": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "bestie": {
+      "emoji": "👯",
+      "name": "절친 올인형",
+      "sub": "Bestie-First Caller",
+      "color": "#ff6b9d",
+      "desc": "위기가 오면 제일 먼저 절친한 친구가 떠오르는 타입! 해결보다 공감이 먼저인 당신은 누군가 내 말을 들어주는 것만으로도 반은 해결된다고 믿어요. 친구한테 전화 한 통이면 세상 무서울 게 없는 찐 우정 부자예요.",
+      "traits": [
+        { "icon": "💬", "name": "공감 욕구", "pct": 95 },
+        { "icon": "🤝", "name": "우정 의존도", "pct": 90 },
+        { "icon": "😭", "name": "솔직함", "pct": 85 },
+        { "icon": "🧘", "name": "혼자 해결력", "pct": 30 }
+      ],
+      "good": "감성 소울메이트형",
+      "bad": "냉철 솔로형"
+    },
+    "family": {
+      "emoji": "🏠",
+      "name": "가족 믿음형",
+      "sub": "Family-First Connector",
+      "color": "#ffd166",
+      "desc": "아무리 힘든 일이 생겨도 가족이 있으면 든든한 타입! 위기 상황에서 본능적으로 가족을 떠올리는 당신은 가족 유대감이 엄청나게 강해요. 엄마 목소리 하나로 마음이 녹는 따뜻한 사람이에요.",
+      "traits": [
+        { "icon": "🏠", "name": "가족 유대감", "pct": 95 },
+        { "icon": "💛", "name": "안정 추구", "pct": 88 },
+        { "icon": "🤗", "name": "신뢰도", "pct": 85 },
+        { "icon": "🌍", "name": "독립심", "pct": 35 }
+      ],
+      "good": "절친 올인형",
+      "bad": "인맥 가동형"
+    },
+    "expert": {
+      "emoji": "🔍",
+      "name": "전문가 탐색형",
+      "sub": "Expert Seeker",
+      "color": "#00d4aa",
+      "desc": "감정보다 해결이 먼저! 위기 상황에서 전문가나 공식 채널을 찾는 당신은 냉정하고 효율적인 사람이에요. 문제를 감정적으로 접근하기보다 가장 빠른 해결책을 탐색하는 현실주의자랍니다.",
+      "traits": [
+        { "icon": "🔍", "name": "문제 해결력", "pct": 95 },
+        { "icon": "🧠", "name": "정보 수집력", "pct": 92 },
+        { "icon": "⚡", "name": "냉철함", "pct": 88 },
+        { "icon": "😢", "name": "감정 표현", "pct": 28 }
+      ],
+      "good": "냉철 솔로형",
+      "bad": "절친 올인형"
+    },
+    "solo": {
+      "emoji": "🧘",
+      "name": "냉철 솔로형",
+      "sub": "Solo Crisis Handler",
+      "color": "#c77dff",
+      "desc": "위기 상황에서도 혼자 해결하는 게 편한 독립적인 타입! 누군가에게 기대기보다 내가 직접 해결하는 걸 선호하는 당신은 강한 자립심의 소유자예요. 다만 가끔은 SOS 날려도 돼요, 진짜로.",
+      "traits": [
+        { "icon": "🧘", "name": "자립심", "pct": 95 },
+        { "icon": "🎯", "name": "집중력", "pct": 90 },
+        { "icon": "🛡️", "name": "자기 통제", "pct": 87 },
+        { "icon": "🤝", "name": "의존도", "pct": 20 }
+      ],
+      "good": "전문가 탐색형",
+      "bad": "가족 믿음형"
+    },
+    "romantic": {
+      "emoji": "❤️",
+      "name": "연인 올인형",
+      "sub": "Romantic SOS Caller",
+      "color": "#ff9e7c",
+      "desc": "위기가 오면 제일 먼저 연인 얼굴이 떠오르는 로맨틱한 타입! 연인이 내 모든 것을 함께 해결해줄 거라는 믿음이 강한 당신. 사랑하는 사람과 함께라면 어떤 위기도 극복 가능하다고 느껴요.",
+      "traits": [
+        { "icon": "❤️", "name": "연애 의존도", "pct": 95 },
+        { "icon": "🫂", "name": "정서적 유대", "pct": 90 },
+        { "icon": "💌", "name": "표현력", "pct": 85 },
+        { "icon": "👯", "name": "우정 의존도", "pct": 40 }
+      ],
+      "good": "절친 올인형",
+      "bad": "냉철 솔로형"
+    },
+    "network": {
+      "emoji": "📲",
+      "name": "인맥 가동형",
+      "sub": "Network Activator",
+      "color": "#7c5cfc",
+      "desc": "위기 상황에서 광범위한 인맥을 풀가동하는 사교계의 달인! 이 상황에 도움 될 사람이 반드시 내 연락처에 있다는 자신감이 있는 당신. 넓은 인간관계가 최고의 보험이라는 걸 본능적으로 알고 있어요.",
+      "traits": [
+        { "icon": "📲", "name": "인맥 활용력", "pct": 95 },
+        { "icon": "🌐", "name": "네트워크 범위", "pct": 92 },
+        { "icon": "🗣️", "name": "사교성", "pct": 88 },
+        { "icon": "🏠", "name": "가족 의존도", "pct": 32 }
+      ],
+      "good": "전문가 탐색형",
+      "bad": "가족 믿음형"
+    }
+  },
+
+  "combos": {
+    "bestie,family": "bestie",
+    "family,bestie": "family",
+    "bestie,expert": "bestie",
+    "expert,bestie": "expert",
+    "bestie,solo": "bestie",
+    "solo,bestie": "solo",
+    "bestie,romantic": "bestie",
+    "romantic,bestie": "romantic",
+    "bestie,network": "bestie",
+    "network,bestie": "network",
+    "family,expert": "family",
+    "expert,family": "expert",
+    "family,solo": "family",
+    "solo,family": "solo",
+    "family,romantic": "family",
+    "romantic,family": "romantic",
+    "family,network": "family",
+    "network,family": "network",
+    "expert,solo": "expert",
+    "solo,expert": "solo",
+    "expert,romantic": "expert",
+    "romantic,expert": "romantic",
+    "expert,network": "expert",
+    "network,expert": "network",
+    "solo,romantic": "solo",
+    "romantic,solo": "romantic",
+    "solo,network": "solo",
+    "network,solo": "network",
+    "romantic,network": "romantic",
+    "network,romantic": "network",
+    "bestie,bestie": "bestie",
+    "family,family": "family",
+    "expert,expert": "expert",
+    "solo,solo": "solo",
+    "romantic,romantic": "romantic",
+    "network,network": "network",
+    "bestie,romantic,family": "bestie",
+    "solo,expert,network": "solo",
+    "romantic,bestie,solo": "romantic",
+    "family,solo,expert": "family",
+    "network,expert,solo": "network",
+    "expert,solo,bestie": "expert"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
