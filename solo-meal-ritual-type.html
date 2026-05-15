@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>혼밥할 때 나는 어떤 의식을 치르는 타입?</title>
+  <meta property="og:title" content="혼밥할 때 나는 어떤 의식을 치르는 타입?" />
+  <meta property="og:description" content="혼자 먹는 밥상 위의 나를 발견해봐 🍚" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "혼밥할 때 나는 어떤 의식을 치르는 타입?",
+    "subtitle": "혼자 먹는 밥상 위의 나를 발견해봐 🍚",
+    "badge": "2026 혼밥 의식 테스트",
+    "emoji": "🍽️",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/solo-meal-ritual-type.html",
+    "resultBadge": "YOUR SOLO MEAL RITUAL"
+  },
+
+  "scoreKeys": ["cinematic", "efficient", "healing", "social", "gourmet", "chaotic", "peaceful"],
+
+  "questions": [
+    {
+      "emoji": "📱",
+      "text": "혼밥 자리 잡자마자 제일 먼저 하는 것은?",
+      "options": [
+        { "text": "📺 유튜브/넷플 바로 틀기 (이미 뭐 볼지 정해둠)", "scores": { "cinematic": 3, "peaceful": 1 } },
+        { "text": "⚡ 폰 내려놓고 바로 먹기 시작", "scores": { "efficient": 3, "peaceful": 1 } },
+        { "text": "📸 음식 사진 찍어서 스토리 올리기", "scores": { "social": 3, "gourmet": 1 } },
+        { "text": "🎵 플레이리스트 고르는 데 5분 소비", "scores": { "healing": 3, "cinematic": 1 } }
+      ]
+    },
+    {
+      "emoji": "🛋️",
+      "text": "혼밥할 때 자세는?",
+      "options": [
+        { "text": "🛋️ 소파에 반쯤 누워서 쟁반 올려놓고", "scores": { "chaotic": 3, "healing": 1 } },
+        { "text": "🪑 식탁에 제대로 앉아서 차려놓고", "scores": { "gourmet": 3, "peaceful": 1 } },
+        { "text": "🖥️ 책상 앞에서 모니터 보면서", "scores": { "cinematic": 2, "efficient": 2 } },
+        { "text": "🧘 바닥에 방석 깔고 좌식으로", "scores": { "healing": 3, "peaceful": 1 } }
+      ]
+    },
+    {
+      "emoji": "🍳",
+      "text": "혼밥 메뉴는 어떻게 결정해?",
+      "options": [
+        { "text": "🎲 냉장고 열어서 있는 거 대충 조합", "scores": { "chaotic": 3, "efficient": 1 } },
+        { "text": "📋 먹고 싶은 거 미리 정해두고 장 봄", "scores": { "gourmet": 3, "peaceful": 1 } },
+        { "text": "📱 배달앱 30분 고민하다 결국 단골 메뉴", "scores": { "healing": 2, "cinematic": 2 } },
+        { "text": "⚡ 가장 빠른 거로 바로 결정", "scores": { "efficient": 3, "chaotic": 1 } }
+      ]
+    },
+    {
+      "emoji": "🎬",
+      "text": "혼밥할 때 틀어놓는 콘텐츠는?",
+      "options": [
+        { "text": "🎬 정주행 중인 드라마/영화 (밥 먹으며 2화 봄)", "scores": { "cinematic": 3, "healing": 1 } },
+        { "text": "🔇 아무것도 안 틀고 조용히 먹음", "scores": { "peaceful": 3, "gourmet": 1 } },
+        { "text": "🍽️ 먹방 or 요리 유튜브 (같이 먹는 느낌)", "scores": { "social": 3, "healing": 1 } },
+        { "text": "🎵 노래만 틀어놓음 (가사 없는 lofi 선호)", "scores": { "healing": 3, "peaceful": 1 } }
+      ]
+    },
+    {
+      "emoji": "🥢",
+      "text": "혼밥 중 폰 알림이 울렸다면?",
+      "options": [
+        { "text": "📵 밥 다 먹을 때까지 무시", "scores": { "peaceful": 3, "gourmet": 1 } },
+        { "text": "👀 뭔지 확인만 하고 답장은 나중에", "scores": { "efficient": 2, "healing": 2 } },
+        { "text": "💬 바로 답장... 혼밥 중에도 사교는 계속", "scores": { "social": 3, "chaotic": 1 } },
+        { "text": "😤 콘텐츠 일시정지하고 처리 후 재개", "scores": { "cinematic": 3, "efficient": 1 } }
+      ]
+    },
+    {
+      "emoji": "🍱",
+      "text": "혼밥 세팅 스타일은?",
+      "options": [
+        { "text": "🍱 반찬 여러 개 작은 그릇에 나눠 담기", "scores": { "gourmet": 3, "peaceful": 1 } },
+        { "text": "🥡 포장 용기째로 그냥 먹음 (설거지 최소화)", "scores": { "efficient": 3, "chaotic": 1 } },
+        { "text": "✨ 좋아하는 그릇에 예쁘게 담아서 사진까지", "scores": { "social": 2, "gourmet": 2 } },
+        { "text": "🍳 냄비/프라이팬 그대로 식탁에 올림", "scores": { "chaotic": 3, "healing": 1 } }
+      ]
+    },
+    {
+      "emoji": "⏱️",
+      "text": "혼밥하는 데 걸리는 시간은?",
+      "options": [
+        { "text": "⚡ 10분 이내... 먹는 건 일이야 일", "scores": { "efficient": 3, "chaotic": 1 } },
+        { "text": "🕐 30분~1시간 (콘텐츠 보느라 늘어짐)", "scores": { "cinematic": 3, "healing": 1 } },
+        { "text": "🧘 20분 정도, 천천히 음미하며 먹음", "scores": { "peaceful": 2, "gourmet": 2 } },
+        { "text": "🤷 들쑥날쑥... 그날 기분 나름", "scores": { "chaotic": 2, "social": 2 } }
+      ]
+    },
+    {
+      "emoji": "🪥",
+      "text": "혼밥 후 마무리 루틴은?",
+      "options": [
+        { "text": "🍵 따뜻한 차 or 커피 한 잔 마시며 여운 즐기기", "scores": { "gourmet": 3, "peaceful": 1 } },
+        { "text": "🛁 바로 설거지 처리하고 개운하게", "scores": { "efficient": 3, "peaceful": 1 } },
+        { "text": "📱 밥 먹은 인증 or 후기 SNS에 올리기", "scores": { "social": 3, "cinematic": 1 } },
+        { "text": "🛋️ 그냥 드러눕기... 설거지는 내일의 내가", "scores": { "chaotic": 3, "healing": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "cinematic_healing": {
+      "emoji": "🎬",
+      "name": "혼밥 시네마 감독",
+      "sub": "Solo Meal Cinema Director",
+      "color": "#c77dff",
+      "desc": "밥상 = 상영관! 뭐 볼지 미리 정해두고 딱 맞는 타이밍에 재생하는 철저한 혼밥 연출가예요. 밥 먹는 시간이 곧 나만의 프라이빗 영화관이 되는 타입. 콘텐츠 끊기면 밥맛도 같이 끊깁니다.",
+      "traits": [
+        { "icon": "🎬", "name": "콘텐츠력", "pct": 95 },
+        { "icon": "🧘", "name": "혼밥편안함", "pct": 88 },
+        { "icon": "🎯", "name": "루틴집착", "pct": 82 },
+        { "icon": "👥", "name": "사교욕구", "pct": 30 }
+      ],
+      "good": "혼밥 힐링 수도승",
+      "bad": "혼밥 SNS 브로드캐스터"
+    },
+    "efficient_chaotic": {
+      "emoji": "⚡",
+      "name": "혼밥 스피드러너",
+      "sub": "Solo Meal Speed Runner",
+      "color": "#00d4aa",
+      "desc": "밥은 생존이고 시간은 소중해! 최소한의 세팅, 최단 시간, 최대 효율로 혼밥을 완수하는 당신. 냄비째 식탁에 올리고 10분 만에 해치우는 걸 당연하게 여기는 현실주의자예요. 설거지는 선택사항입니다.",
+      "traits": [
+        { "icon": "⚡", "name": "효율성", "pct": 95 },
+        { "icon": "🤷", "name": "대충력", "pct": 90 },
+        { "icon": "🧠", "name": "현실감각", "pct": 85 },
+        { "icon": "✨", "name": "감성세팅", "pct": 22 }
+      ],
+      "good": "혼밥 시네마 감독",
+      "bad": "혼밥 미식 큐레이터"
+    },
+    "gourmet_peaceful": {
+      "emoji": "🍽️",
+      "name": "혼밥 미식 큐레이터",
+      "sub": "Solo Meal Gourmet Curator",
+      "color": "#ffd166",
+      "desc": "혼자 먹는다고 대충? 절대 안 되지! 반찬 하나하나 예쁜 그릇에 담고 식탁을 정성스럽게 차리는 나를 위한 셰프예요. 혼밥이야말로 진짜 내 취향대로 먹을 수 있는 최고의 식사라고 생각합니다.",
+      "traits": [
+        { "icon": "🍽️", "name": "식탁미학", "pct": 95 },
+        { "icon": "🌿", "name": "여유로움", "pct": 90 },
+        { "icon": "🧑‍🍳", "name": "요리욕심", "pct": 85 },
+        { "icon": "⚡", "name": "빠름", "pct": 25 }
+      ],
+      "good": "혼밥 힐링 수도승",
+      "bad": "혼밥 스피드러너"
+    },
+    "social_cinematic": {
+      "emoji": "📢",
+      "name": "혼밥 SNS 브로드캐스터",
+      "sub": "Solo Meal SNS Broadcaster",
+      "color": "#ff6b9d",
+      "desc": "혼밥도 공유해야 완성! 사진 찍고, 스토리 올리고, 먹방 유튜버랑 같이 먹는 느낌으로 외로움을 사회화하는 타입이에요. 혼자 먹지만 팔로워들과 함께라면 전혀 외롭지 않습니다. 댓글 확인이 후식이에요.",
+      "traits": [
+        { "icon": "📸", "name": "공유욕구", "pct": 95 },
+        { "icon": "💬", "name": "사교력", "pct": 88 },
+        { "icon": "🔥", "name": "트렌드감", "pct": 83 },
+        { "icon": "🔇", "name": "조용함", "pct": 28 }
+      ],
+      "good": "혼밥 스피드러너",
+      "bad": "혼밥 힐링 수도승"
+    },
+    "healing_peaceful": {
+      "emoji": "🌿",
+      "name": "혼밥 힐링 수도승",
+      "sub": "Solo Meal Healing Monk",
+      "color": "#7ecfc0",
+      "desc": "혼밥은 나를 위한 명상 시간! lofi 틀어놓고 따뜻한 음식 천천히 음미하는 게 하루 최고의 힐링이에요. 아무도 방해하지 않는 이 시간이 너무 소중해서 오히려 같이 밥 먹기 싫어질 때도 있습니다.",
+      "traits": [
+        { "icon": "🌿", "name": "힐링력", "pct": 95 },
+        { "icon": "🧘", "name": "내면평화", "pct": 92 },
+        { "icon": "☕", "name": "여유감성", "pct": 87 },
+        { "icon": "⚡", "name": "속도감", "pct": 20 }
+      ],
+      "good": "혼밥 미식 큐레이터",
+      "bad": "혼밥 SNS 브로드캐스터"
+    },
+    "chaotic_social": {
+      "emoji": "🌀",
+      "name": "혼밥 프리스타일러",
+      "sub": "Solo Meal Freestyler",
+      "color": "#ff9e7c",
+      "desc": "혼밥에 규칙 같은 건 없어! 냉장고 털어서 즉흥 요리, 소파에 드러누워 먹다가 폰으로 카톡까지 동시에 처리하는 멀티태스킹 혼밥러예요. 매번 다르지만 그게 오히려 재미있다고 느끼는 자유로운 영혼입니다.",
+      "traits": [
+        { "icon": "🌀", "name": "즉흥력", "pct": 95 },
+        { "icon": "🎲", "name": "랜덤감성", "pct": 88 },
+        { "icon": "😂", "name": "대충미학", "pct": 85 },
+        { "icon": "📋", "name": "계획력", "pct": 23 }
+      ],
+      "good": "혼밥 스피드러너",
+      "bad": "혼밥 미식 큐레이터"
+    }
+  },
+
+  "combos": {
+    "cinematic,healing": "cinematic_healing",
+    "healing,cinematic": "cinematic_healing",
+    "efficient,chaotic": "efficient_chaotic",
+    "chaotic,efficient": "efficient_chaotic",
+    "gourmet,peaceful": "gourmet_peaceful",
+    "peaceful,gourmet": "gourmet_peaceful",
+    "social,cinematic": "social_cinematic",
+    "cinematic,social": "social_cinematic",
+    "healing,peaceful": "healing_peaceful",
+    "peaceful,healing": "healing_peaceful",
+    "chaotic,social": "chaotic_social",
+    "social,chaotic": "chaotic_social",
+    "cinematic,efficient": "cinematic_healing",
+    "cinematic,gourmet": "cinematic_healing",
+    "cinematic,peaceful": "healing_peaceful",
+    "cinematic,chaotic": "chaotic_social",
+    "efficient,healing": "efficient_chaotic",
+    "efficient,gourmet": "gourmet_peaceful",
+    "efficient,social": "efficient_chaotic",
+    "efficient,peaceful": "gourmet_peaceful",
+    "gourmet,cinematic": "cinematic_healing",
+    "gourmet,efficient": "efficient_chaotic",
+    "gourmet,healing": "healing_peaceful",
+    "gourmet,social": "social_cinematic",
+    "gourmet,chaotic": "chaotic_social",
+    "social,efficient": "efficient_chaotic",
+    "social,healing": "healing_peaceful",
+    "social,gourmet": "social_cinematic",
+    "social,peaceful": "healing_peaceful",
+    "peaceful,cinematic": "cinematic_healing",
+    "peaceful,efficient": "gourmet_peaceful",
+    "peaceful,social": "social_cinematic",
+    "peaceful,chaotic": "chaotic_social",
+    "healing,efficient": "efficient_chaotic",
+    "healing,gourmet": "gourmet_peaceful",
+    "healing,social": "social_cinematic",
+    "healing,chaotic": "chaotic_social",
+    "chaotic,cinematic": "cinematic_healing",
+    "chaotic,gourmet": "chaotic_social",
+    "chaotic,healing": "healing_peaceful",
+    "chaotic,peaceful": "chaotic_social",
+    "efficient,cinematic": "cinematic_healing"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
